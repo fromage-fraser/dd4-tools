@@ -1,0 +1,9 @@
+.DS_Store
+*.iml
+.gradle/
+/.idea/
+/dist/
+build/
+out/
+output/
+/sample-data/area/
