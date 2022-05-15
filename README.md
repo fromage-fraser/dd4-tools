@@ -1,6 +1,6 @@
 # Dragons Domain IV MUD Tools
 
-A collection of tools for parsing and analysing data files used by the Dragon's Domain IV MUD ("DD4 MUD").
+A collection of tools for parsing and analysing data files used by the Dragons Domain IV MUD ("DD4 MUD").
 
 The MUD server code can be found at [github.com/fromage-fraser/dd4](https://github.com/fromage-fraser/dd4).
 
@@ -24,7 +24,7 @@ Runs some basic linting checks over parsed area data. Can be used to find basic 
 
 Creates static HTML maps from parsed area files.
 
-*NOTE:* These maps are far from perfect and have various layout issues.
+**NOTE:** These maps are far from perfect and have various layout issues.
 However, they are generally "good enough". Lots to improve here!
 
 ### Area Query

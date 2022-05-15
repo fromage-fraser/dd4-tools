@@ -58,9 +58,9 @@
             padding: 0;
             margin: 3em 4em;
             font-family: 'Open Sans', sans-serif;
-            font-size: 15px;
+            font-size: 14px;
             color: #111111;
-            background: #efede6;
+            background: linear-gradient(to bottom, #f4f2eb, #cac7bc);
         }
 
         h1, h2, h3 {
@@ -497,7 +497,7 @@
     </div>
     <h1>${areaMap.name()?html}</h1>
     <#if areaMap.levelDescription()?has_content>
-        <div class="subheading">${areaMap.levelDescription()?html}</div>
+        <div class="subheading">${areaMap.levelDescription()?html} &mdash; ${areaMap.author()?html}</div>
     </#if>
 </div>
 <div class="fragments">
