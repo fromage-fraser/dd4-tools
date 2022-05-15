@@ -16,9 +16,9 @@
             padding: 0;
             margin: 3em 4em;
             font-family: 'Open Sans', sans-serif;
-            font-size: 15px;
+            font-size: 14px;
             color: #111111;
-            background: #efede6;
+            background: linear-gradient(to bottom, #f4f2eb, #cac7bc);
         }
 
         h1 {
@@ -45,20 +45,23 @@
         }
 
         .items {
-            columns: auto;
-            column-width: 300px;
-            column-gap: 40px;
             margin: 40px 0;
-            column-fill: balance;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 20px 25px;
         }
 
         .item {
+            width: 350px;
             box-sizing: border-box;
             border: 1px solid #949494;
             background: #fafafa;
-            border-radius: 5px;
-            padding: 20px;
-            margin-bottom: 30px;
+            border-radius: 4px;
+            padding: 15px;
             break-inside: avoid;
         }
 
