@@ -5,8 +5,10 @@ import dd4.core.model.Area
 import dd4.core.model.AreaSpecial
 import dd4.core.model.Direction
 import dd4.core.model.Exit
+import dd4.core.model.Game
 import dd4.core.model.Help
 import dd4.core.model.Item
+import dd4.core.model.ItemSet
 import dd4.core.model.MobProg
 import dd4.core.model.MobProgAssignment
 import dd4.core.model.MobProgFile
@@ -109,12 +111,14 @@ class AreaParser(
                         sourceFile.addMobProgFiles(mobProgAssignments.map { loadMobProgFile(it.fileName) })
                     }
                     Section.OBJECTS -> sourceFile.addObjects(parseObjectsSection(sourceFile, reader))
+                    Section.OBJECT_SETS -> sourceFile.addObjectSets(parseObjectSetsSection(sourceFile, reader))
                     Section.ROOMS -> sourceFile.addRooms(parseRoomsSection(sourceFile, reader))
                     Section.RESETS -> sourceFile.addResets(parseResetsSection(sourceFile, reader))
                     Section.SHOPS -> sourceFile.addShops(parseShopsSection(sourceFile, reader))
                     Section.SPECIAL_FUNCTIONS ->
                         sourceFile.addSpecialFunctions(parseSpecialFunctionsSection(sourceFile, reader))
                     Section.HELPS -> sourceFile.addHelps(parseHelpsSection(reader))
+                    Section.GAMES -> sourceFile.addGames(parseGamesSection(sourceFile, reader))
                 }
             }
         }
@@ -163,8 +167,8 @@ class AreaParser(
             val shortDescription = reader.readString()
             val longDescription = reader.readString()
             val fullDescription = reader.readString()
-            val actFlags = Mobile.ActFlag.fromInt(reader.readNumber())
-            val effectFlags = Mobile.EffectFlag.fromInt(reader.readNumber())
+            val actFlags = Mobile.ActFlag.toSet(reader.readBits())
+            val effectFlags = Mobile.EffectFlag.toSet(reader.readBits())
             val alignment = reader.readNumber()
             reader.readLetter()  // 'S' (for "simple"?)
             val level = reader.readNumber()
@@ -187,7 +191,7 @@ class AreaParser(
             reader.readLetter()
             reader.readNumber()
 
-            val bodyFormFlags = Mobile.BodyFormFlag.fromInt(reader.readNumber())
+            val bodyFormFlags = Mobile.BodyFormFlag.toSet(reader.readBits())
 
             // Unused
             reader.readNumber()
@@ -286,7 +290,7 @@ class AreaParser(
             reader.readString()  // Unused: Action description
 
             val type = Item.Type.fromId(reader.readNumber())
-            val extraFlags = Item.ExtraFlag.fromInt(reader.readNumber())
+            val extraFlags = Item.ExtraFlag.toSet(reader.readBits())
 
             val trap =
                     if (extraFlags.contains(Item.ExtraFlag.TRAP))
@@ -306,7 +310,7 @@ class AreaParser(
                     else
                         null
 
-            val wearFlags = Item.WearFlag.fromInt(reader.readNumber())
+            val wearFlags = Item.WearFlag.toSet(reader.readBits())
             val value1 = reader.readString()
             val value2 = reader.readString()
             val value3 = reader.readString()
@@ -375,6 +379,54 @@ class AreaParser(
         return objects
     }
 
+    private fun parseObjectSetsSection(sourceFile: SourceFile, reader: AreaFileReader): List<ItemSet> {
+        val objectSets = mutableListOf<ItemSet>()
+        var vnum = reader.readVnum()
+
+        //TODO: Actually store ItemSet data
+        while (vnum != 0) {
+            reader.readString() // name
+            reader.readString() // description
+
+            reader.readNumber() // object (vnums?)
+            reader.readNumber()
+            reader.readNumber()
+            reader.readNumber()
+            reader.readNumber()
+
+            reader.readNumber() // bonus number (?)
+            reader.readNumber()
+            reader.readNumber()
+            reader.readNumber()
+            reader.readNumber()
+
+            var loop = true
+
+            while (loop) {
+                reader.readWhitespace()
+                when (reader.peekChar()) {
+                    Markup.OBJECT_SET_EFFECT_DELIMITER -> {
+                        reader.readChar()
+                        reader.readNumber()
+                        reader.readNumber()
+                    }
+                    null -> throw ParseError("End of file")
+                    else -> loop = false
+                }
+            }
+
+            val itemSet = ItemSet(
+                    vnum = vnum,
+            )
+
+            debug("${sourceFile.id}: $itemSet")
+            objectSets.add(itemSet)
+            vnum = reader.readVnum()
+        }
+
+        return objectSets
+    }
+
     private fun typePropertiesFor(type: Item.Type, values: Item.Values): Item.TypeProperties {
         val properties = Item.TypeProperties()
 
@@ -418,7 +470,7 @@ class AreaParser(
             val name = reader.readString()
             val description = reader.readString()
             reader.readNumber()  // Unused: Area number
-            val flags = Room.Flag.fromInt(reader.readNumber())
+            val flags = Room.Flag.toSet(reader.readBits())
             val sectorType = Room.SectorType.findById(reader.readNumber()) ?: Room.SectorType.UNKNOWN
 
             val exits = mutableMapOf<Direction, Exit>()
@@ -587,6 +639,40 @@ class AreaParser(
         }
 
         return helps
+    }
+
+    private fun parseGamesSection(sourceFile: SourceFile, reader: AreaFileReader): List<Game> {
+        val games = mutableListOf<Game>()
+        var loop = true
+
+        while (loop) {
+            reader.readWhitespace()
+
+            when (val nextChar = reader.readChar()?.uppercaseChar()) {
+                Markup.GAME_END_OF_SECTION_DELIMITER -> loop = false
+                Markup.GAME_COMMENT_DELIMITER -> reader.readToEol()
+                Markup.GAME_MOBILE_DELIMITER -> {
+                    //TODO: Populate Game completely
+                    val croupierVnum = reader.readNumber()
+                    reader.readWord()
+                    reader.readNumber()
+                    reader.readNumber()
+                    reader.readNumber()
+                    reader.readToEol()  // Comments
+
+                    val game = Game(
+                            croupierVnum = croupierVnum
+                    )
+
+                    debug("${sourceFile.id}: $game")
+                    games.add(game)
+                }
+                null -> throw ParseError("End of file")
+                else -> throw ParseError("Unexpected char '$nextChar'", reader)
+            }
+        }
+
+        return games
     }
 
     private fun loadMobProgFile(fileName: String): MobProgFile {

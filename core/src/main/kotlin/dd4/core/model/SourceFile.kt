@@ -11,11 +11,13 @@ data class SourceFile (
         val mobProgAssignments: List<MobProgAssignment> = mutableListOf(),
         val mobProgFiles: List<MobProgFile> = mutableListOf(),
         val objects: List<Item> = mutableListOf(),
+        val objectSets: List<ItemSet> = mutableListOf(),
         val rooms: List<Room> = mutableListOf(),
         val resets: List<Reset> = mutableListOf(),
         val shops: List<Shop> = mutableListOf(),
         val specialFunctions: List<SpecialFunction> = mutableListOf(),
         val helps: List<Help> = mutableListOf(),
+        val games: List<Game> = mutableListOf(),
 ) {
     override fun toString(): String {
         return "SourceFile(id='$id', fileName='$fileName')"
@@ -27,6 +29,8 @@ data class SourceFile (
 
     fun addObjects(toAdd: Collection<Item>) = (objects as MutableList).addAll(toAdd)
 
+    fun addObjectSets(toAdd: Collection<ItemSet>) = (objectSets as MutableList).addAll(toAdd)
+
     fun addRooms(toAdd: Collection<Room>) = (rooms as MutableList).addAll(toAdd)
 
     fun addResets(toAdd: Collection<Reset>) = (resets as MutableList).addAll(toAdd)
@@ -36,6 +40,8 @@ data class SourceFile (
     fun addSpecialFunctions(toAdd: Collection<SpecialFunction>) = (specialFunctions as MutableList).addAll(toAdd)
 
     fun addHelps(toAdd: Collection<Help>) = (helps as MutableList).addAll(toAdd)
+
+    fun addGames(toAdd: Collection<Game>) = (games as MutableList).addAll(toAdd)
 
     fun addMobProgFiles(toAdd: Collection<MobProgFile>) {
         toAdd.forEach { mobProgFile ->

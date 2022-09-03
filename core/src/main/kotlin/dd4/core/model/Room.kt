@@ -14,25 +14,26 @@ data class Room(
 ) {
     enum class Flag(
             @JsonValue val tag: String,
-            val bit: Int
+            val bit: ULong
     ) {
-        DARK("dark", 0x1),
-        NO_MOB("no_mob", 0x4),
-        INDOORS("indoors", 0x8),
-        PRIVATE("private", 0x200),
-        SAFE("safe", 0x400),
-        SOLITARY("solitary", 0x800),
-        PET_SHOP("pet_shop", 0x1000),
-        NO_RECALL("no_recall", 0x2000),
-        CONE_OF_SILENCE("cone_of_silence", 0x4000),
-        PLAYER_KILLER("player_killer", 0x8000),
-        HEALING("healing", 0x10000),
-        FREEZING("freezing", 0x20000),
-        BURNING("burning", 0x40000),
-        NO_MOUNT("no_mount", 0x80000);
+        DARK("dark", 0x1u),
+        NO_MOB("no_mob", 0x4u),
+        INDOORS("indoors", 0x8u),
+        PRIVATE("private", 0x200u),
+        SAFE("safe", 0x400u),
+        SOLITARY("solitary", 0x800u),
+        PET_SHOP("pet_shop", 0x1000u),
+        NO_RECALL("no_recall", 0x2000u),
+        CONE_OF_SILENCE("cone_of_silence", 0x4000u),
+        PLAYER_KILLER("player_killer", 0x8000u),
+        HEALING("healing", 0x10000u),
+        FREEZING("freezing", 0x20000u),
+        BURNING("burning", 0x40000u),
+        NO_MOUNT("no_mount", 0x80000u),
+        NO_DROP("no_drop", 0x8000000000000000u);
 
         companion object {
-            fun fromInt(value: Int) = values().filter { value.and(it.bit) != 0 }.toSet()
+            fun toSet(value: ULong) = values().filter { value.and(it.bit) != 0uL }.toSet()
         }
     }
 

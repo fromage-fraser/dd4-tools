@@ -60,7 +60,17 @@ data class Item(
         MITHRIL("mithril", 38),
         WHETSTONE("whetstone", 39),
         CRAFT("crafting", 40),
-        SPELLCRAFT("spellcrafting", 41);
+        SPELLCRAFT("spellcrafting", 41),
+        TURRET_MODULE("turret_module", 42),
+        FORGE("forge", 43),
+        ARRESTOR_UNIT("arrestor_unit", 44),
+        DRIVER_UNIT("driver_unit", 45),
+        REFLECTOR_UNIT("reflector_unit", 46),
+        SHIELD_UNIT("shield_unit", 47),
+        DEFENSIVE_TURRET_MODULE("defensive_turret_module", 48),
+        TURRET("turret", 49),
+        COMBAT_PULSE("combat_pulse", 50),
+        DEFENSIVE_PULSE("defensive_pulse", 51);
 
         companion object {
             fun fromId(value: Int) =
@@ -77,74 +87,76 @@ data class Item(
 
     enum class ExtraFlag(
             @JsonValue val tag: String,
-            val bit: Int
+            val bit: ULong
     ) {
-        GLOW("glow", 0x1),
-        HUM("hum", 0x2),
-        EGO("ego", 0x4),
-        ANTI_RANGER("anti_ranger", 0x8),
-        EVIL("evil", 0x10),
-        INVISIBLE("invisible", 0x20),
-        MAGIC("magic", 0x40),
-        NO_DROP("no_drop", 0x80),
-        BLESSED("blessed", 0x100),
-        ANTI_GOOD("anti_good", 0x200),
-        ANTI_EVIL("anti_evil", 0x400),
-        ANTI_NEUTRAL("anti_neutral", 0x800),
-        NO_REMOVE("no_remove", 0x1000),
-        INVENTORY("inventory", 0x2000),
-        POISONED("poisoned", 0x4000),
-        ANTI_MAGE("anti_mage", 0x8000),
-        ANTI_CLERIC("anti_cleric", 0x10000),
-        ANTI_THIEF("anti_thief", 0x20000),
-        ANTI_WARRIOR("anti_warrior", 0x40000),
-        ANTI_PSIONIC("anti_psionic", 0x80000),
-        VORPAL("vorpal", 0x100000),
-        TRAP("trap", 0x200000),
-        DONATED("donated", 0x400000),
-        BLADE_THIRST("blade_thirst", 0x800000),
-        SHARP("sharp", 0x1000000),
-        FORGED("forged", 0x2000000),
-        BODY_PART("body_part", 0x4000000),
-        LANCE("lance", 0x8000000),
-        ANTI_BRAWLER("anti_brawler", 0x10000000),
-        ANTI_SHAPE_SHIFTER("anti_shape_shifter", 0x20000000),
-        BOW("bow", 0x40000000);
+        GLOW("glow", 0x1u),
+        HUM("hum", 0x2u),
+        EGO("ego", 0x4u),
+        ANTI_RANGER("anti_ranger", 0x8u),
+        EVIL("evil", 0x10u),
+        INVISIBLE("invisible", 0x20u),
+        MAGIC("magic", 0x40u),
+        NO_DROP("no_drop", 0x80u),
+        BLESSED("blessed", 0x100u),
+        ANTI_GOOD("anti_good", 0x200u),
+        ANTI_EVIL("anti_evil", 0x400u),
+        ANTI_NEUTRAL("anti_neutral", 0x800u),
+        NO_REMOVE("no_remove", 0x1000u),
+        INVENTORY("inventory", 0x2000u),
+        POISONED("poisoned", 0x4000u),
+        ANTI_MAGE("anti_mage", 0x8000u),
+        ANTI_CLERIC("anti_cleric", 0x10000u),
+        ANTI_THIEF("anti_thief", 0x20000u),
+        ANTI_WARRIOR("anti_warrior", 0x40000u),
+        ANTI_PSIONIC("anti_psionic", 0x80000u),
+        VORPAL("vorpal", 0x100000u),
+        TRAP("trap", 0x200000u),
+        DONATED("donated", 0x400000u),
+        BLADE_THIRST("blade_thirst", 0x800000u),
+        SHARP("sharp", 0x1000000u),
+        FORGED("forged", 0x2000000u),
+        BODY_PART("body_part", 0x4000000u),
+        LANCE("lance", 0x8000000u),
+        ANTI_BRAWLER("anti_brawler", 0x10000000u),
+        ANTI_SHAPE_SHIFTER("anti_shape_shifter", 0x20000000u),
+        BOW("bow", 0x40000000u),
+        ANTI_SMITHY("anti_smithy", 0x400000000u),
+        CURSED("cursed", 0x2000000000000000u);
 
         companion object {
-            fun fromInt(value: Int) = values().filter { value.and(it.bit) != 0 }.toMutableSet()
+            fun toSet(value: ULong) = values().filter { value.and(it.bit) != 0uL }.toMutableSet()
         }
     }
 
     enum class WearFlag(
             @JsonValue val tag: String,
-            val bit: Int
+            val bit: ULong
     ) {
-        TAKE("take", 0x1),
-        WEAR_FINGER("wear_finger", 0x2),
-        WEAR_NECK("wear_neck", 0x4),
-        WEAR_BODY("wear_body", 0x8),
-        WEAR_HEAD("wear_head", 0x10),
-        WEAR_LEGS("wear_legs", 0x20),
-        WEAR_FEET("wear_feet", 0x40),
-        WEAR_HANDS("wear_hands", 0x80),
-        WEAR_ARMS("wear_arms", 0x100),
-        WEAR_SHIELD("wear_shield", 0x200),
-        WEAR_ABOUT_BODY("wear_about_body", 0x400),
-        WEAR_WAIST("wear_waist", 0x800),
-        WEAR_WRIST("wear_wrist", 0x1000),
-        WIELD("wield", 0x2000),
-        HOLD("hold", 0x4000),
-        FLOAT("float", 0x8000),
-        WEAR_POUCH("wear_pouch", 0x10000),
-        RANGED_WEAPON("ranged_weapon", 0x20000),
-        SIZE_ALL("size_all", 0x8000000),
-        SIZE_SMALL("size_small", 0x10000000),
-        SIZE_MEDIUM("size_medium", 0x20000000),
-        SIZE_LARGE("size_large", 0x40000000);
+        TAKE("take", 0x1u),
+        WEAR_FINGER("wear_finger", 0x2u),
+        WEAR_NECK("wear_neck", 0x4u),
+        WEAR_BODY("wear_body", 0x8u),
+        WEAR_HEAD("wear_head", 0x10u),
+        WEAR_LEGS("wear_legs", 0x20u),
+        WEAR_FEET("wear_feet", 0x40u),
+        WEAR_HANDS("wear_hands", 0x80u),
+        WEAR_ARMS("wear_arms", 0x100u),
+        WEAR_SHIELD("wear_shield", 0x200u),
+        WEAR_ABOUT_BODY("wear_about_body", 0x400u),
+        WEAR_WAIST("wear_waist", 0x800u),
+        WEAR_WRIST("wear_wrist", 0x1000u),
+        WIELD("wield", 0x2000u),
+        HOLD("hold", 0x4000u),
+        FLOAT("float", 0x8000u),
+        WEAR_POUCH("wear_pouch", 0x10000u),
+        RANGED_WEAPON("ranged_weapon", 0x20000u),
+        SIZE_ALL("size_all", 0x8000000u),
+        SIZE_SMALL("size_small", 0x10000000u),
+        SIZE_MEDIUM("size_medium", 0x20000000u),
+        SIZE_LARGE("size_large", 0x40000000u);
 
         companion object {
-            fun fromInt(value: Int) = values().filter { value.and(it.bit) != 0 }.toSet()
+            fun toSet(value: ULong) = values().filter { value.and(it.bit) != 0uL }.toSet()
         }
     }
 
