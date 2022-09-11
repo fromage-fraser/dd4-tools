@@ -32,7 +32,7 @@ class AreaMap(
     fun levelDescription() =
             when {
                 area.lowLevel == Area.LEVEL_ALL -> "All levels"
-                area.lowLevel == Area.LEVEL_CLAN -> "Clan headquarters"
+                area.isClanHeadquarters() -> "Clan headquarters"
                 area.lowLevel > 0 && area.highLevel == area.lowLevel -> "Level ${area.lowLevel}"
                 area.lowLevel > 0 && area.highLevel > 0 -> "Levels ${area.lowLevel}-${area.highLevel}"
                 else -> null

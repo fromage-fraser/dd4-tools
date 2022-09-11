@@ -25,6 +25,7 @@ class MapMaker(
 
         val allAreaFiles = areaFileMapper.readFromFile(areaFileName)
                 .filter { it.area != null }
+                .filter { it.area?.isClanHeadquarters() == false }
                 .filter { it.rooms.isNotEmpty() }
 
         val areaFilesToMap = allAreaFiles

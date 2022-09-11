@@ -14,4 +14,6 @@ data class Area (
         const val LEVEL_NONE = -3
         const val LEVEL_CLAN = -4
     }
+
+    fun isClanHeadquarters() = lowLevel == LEVEL_CLAN
 }
