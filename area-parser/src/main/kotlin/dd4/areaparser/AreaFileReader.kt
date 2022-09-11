@@ -119,7 +119,7 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
         readWhitespace()
         val firstChar = readChar() ?: throw ParseError("End of file")
 
-        if (!(firstChar.isDigit() || firstChar == '+' || firstChar == '-'))
+        if (!firstChar.isDigit())
             throw ParseError("Expected start of number, found '$firstChar'", this)
 
         val unparsed = firstChar + readWhile { it.isDigit() || it == Markup.BIT_DELIMITER }
