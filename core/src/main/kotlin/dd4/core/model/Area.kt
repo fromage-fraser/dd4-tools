@@ -1,5 +1,7 @@
 package dd4.core.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+
 data class Area (
         val id: String,
         val name: String,
@@ -15,5 +17,6 @@ data class Area (
         const val LEVEL_CLAN = -4
     }
 
+    @JsonIgnore
     fun isClanHeadquarters() = lowLevel == LEVEL_CLAN
 }
