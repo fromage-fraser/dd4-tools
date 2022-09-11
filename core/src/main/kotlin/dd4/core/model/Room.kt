@@ -95,7 +95,9 @@ data class Room(
 
     @get:JsonIgnore
     val cleanName: String
-        get() = this.name.replace(Regex("[{}]."), "")
+        get() = this.name
+                .replace(Regex("[{}]."), "")
+                .replace(Regex("<[^>]*>"), "")
 
     fun exit(direction: Direction) = exits[direction]
 
