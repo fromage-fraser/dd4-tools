@@ -115,6 +115,25 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
         return unparsed.toInt()
     }
 
+    fun readBits(): ULong {
+        readWhitespace()
+        val firstChar = readChar() ?: throw ParseError("End of file")
+
+        if (!firstChar.isDigit())
+            throw ParseError("Expected start of number, found '$firstChar'", this)
+
+        val unparsed = firstChar + readWhile { it.isDigit() || it == Markup.BIT_DELIMITER }
+
+        if (unparsed.contains(Markup.BIT_DELIMITER)) {
+            return unparsed.split(Markup.BIT_DELIMITER)
+                    .filter { it.isNotBlank() }
+                    .map { it.toULong() }
+                    .sum()
+        }
+
+        return unparsed.toULong()
+    }
+
     fun readLetter(): Char {
         readWhitespace()
         return readChar() ?: throw ParseError("End of file")
