@@ -92,7 +92,7 @@ General usage:
 
 Create individual HTML maps for areas, with an index page. Uses parsed area data as input.
 
-Create maps from sample-data area files and write them to the `output/maps/all/` directory:
+To create maps from sample-data area files and write them to the `output/maps/minified/` directory:
 
     map maps
 
@@ -103,15 +103,16 @@ For full usage:
     java -jar output/lib/map-maker.jar --help
 
 
-**NOTE:** These maps are not minimised, and are quite large. Minifying them is recommended.
-
-Minify HTML maps:
-
-    make maps-min
-
 This process requires the `html-minifier` Javascript library to be installed:
 
     npm install html-minifier -g
+
+To generate maps without this minification process, run
+
+    make maps-unminified
+
+This will write maps to the `output/maps/unminified/` directory.
+Note that maps are quite large if not minified.
 
 
 ### Query DB
