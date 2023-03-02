@@ -94,7 +94,7 @@ Create individual HTML maps for areas, with an index page. Uses parsed area data
 
 To create maps from sample-data area files and write them to the `output/maps/minified/` directory:
 
-    map maps
+    make maps
 
 For full usage:
 

@@ -204,7 +204,18 @@ data class Item(
         RESIST_COLD("resist_cold", 37),
         RESIST_LIGHTNING("resist_lightning", 38),
         RESIST_ACID("resist_acid", 39),
-        BREATHE_WATER("breathe_water", 40);
+        BREATHE_WATER("breathe_water", 40),
+        BALANCE("balance", 41),
+        SET_UNCOMMON("uncommon_set", 42),
+        SET_RARE("rare_set", 43),
+        SET_EPIC("epic_set", 44),
+        SET_LEGENDARY("legendary_set", 45),
+        STRENGTHEN("strengthen", 46),
+        ENGRAVED("engraved", 47),
+        SERRATED("serrated", 48),
+        INSCRIBED("inscribed", 49),
+        CRIT("critical_hit", 50),
+        SWIFTNESS("swiftness", 51);
 
         companion object {
             fun fromId(value: Int) =

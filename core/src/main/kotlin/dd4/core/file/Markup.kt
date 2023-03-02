@@ -12,6 +12,7 @@ object Markup {
     const val MOBILE_MOB_PROG_START_DELIMITER = '>'
     const val MOBILE_MOB_PROG_END_DELIMITER = '|'
     const val MOBILE_TAUGHT_SKILLS_DELIMITER = '&'
+    const val MOBILE_SPEC_DELIMITER = '<'
 
     const val MOB_PROG_START_DELIMITER = 'M'
     const val MOB_PROG_END_OF_SECTION_DELIMITER = 'S'

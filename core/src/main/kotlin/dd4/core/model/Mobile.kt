@@ -16,7 +16,8 @@ data class Mobile(
         val effectFlags: Set<EffectFlag>,
         val bodyFormFlags: Set<BodyFormFlag>,
         val mobProgs: List<MobProg>,
-        val taughtSkills: List<TaughtSkill>
+        val taughtSkills: List<TaughtSkill>,
+        val mobSpec: MobSpec?,
 ) {
     enum class Sex(
             @JsonValue val tag: String,
