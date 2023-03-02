@@ -235,6 +235,14 @@
             background: #e2bf11;
         }
 
+        .${styleSector}-swamp {
+            background: #6b8552;
+        }
+
+        .${styleSector}-underwater_ground {
+            background: #324a63;
+        }
+
         .${styleRoomMain} {
             color: ${roomColourForeground};
             background: ${roomColourBackground};
@@ -652,11 +660,17 @@
         <div class="${styleLegendSymbol}"><span class="${styleLegendSector} ${styleSector}-underwater"></span></div>
         <div class="${styleLegendDescription}">Underwater</div>
 
+        <div class="${styleLegendSymbol}"><span class="${styleLegendSector} ${styleSector}-underwater_ground"></span></div>
+        <div class="${styleLegendDescription}">Underwater ground</div>
+
         <div class="${styleLegendSymbol}"><span class="${styleLegendSector} ${styleSector}-air"></span></div>
         <div class="${styleLegendDescription}">In the air</div>
 
         <div class="${styleLegendSymbol}"><span class="${styleLegendSector} ${styleSector}-desert"></span></div>
         <div class="${styleLegendDescription}">Desert</div>
+
+        <div class="${styleLegendSymbol}"><span class="${styleLegendSector} ${styleSector}-swamp"></span></div>
+        <div class="${styleLegendDescription}">Swamp</div>
     </div>
 </div>
 </body>
