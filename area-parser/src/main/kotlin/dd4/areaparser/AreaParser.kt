@@ -12,6 +12,7 @@ import dd4.core.model.ItemSet
 import dd4.core.model.MobProg
 import dd4.core.model.MobProgAssignment
 import dd4.core.model.MobProgFile
+import dd4.core.model.MobSpec
 import dd4.core.model.Mobile
 import dd4.core.model.Recall
 import dd4.core.model.Reset
@@ -203,6 +204,7 @@ class AreaParser(
             val mobProgs = mutableListOf<MobProg>()
             val taughtSkills = mutableListOf<Mobile.TaughtSkill>()
             var loop = true
+            var mobSpec: MobSpec? = null
 
             while (loop) {
                 reader.readWhitespace()
@@ -221,6 +223,13 @@ class AreaParser(
                     Markup.MOBILE_TAUGHT_SKILLS_DELIMITER -> {
                         reader.readChar()
                         taughtSkills.add(Mobile.TaughtSkill(level = reader.readNumber(), skill = reader.readWord()))
+                    }
+                    Markup.MOBILE_SPEC_DELIMITER -> {
+                        reader.readChar()
+                        mobSpec = MobSpec(
+                                name = reader.readString(),
+                                rank = reader.readString(),
+                        )
                     }
                     Markup.SECTION_DELIMITER -> loop = false
                     null -> throw ParseError("End of file")
@@ -241,7 +250,8 @@ class AreaParser(
                     effectFlags = effectFlags,
                     bodyFormFlags = bodyFormFlags,
                     mobProgs = mobProgs,
-                    taughtSkills = taughtSkills
+                    taughtSkills = taughtSkills,
+                    mobSpec = mobSpec,
             )
 
             debug("${sourceFile.id}: $mobile")
