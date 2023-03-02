@@ -114,6 +114,10 @@ To generate maps without this minification process, run
 This will write maps to the `output/maps/unminified/` directory.
 Note that maps are quite large if not minified.
 
+The following is convenient for regenerating and checking maps quickly:
+
+    make clean-output maps-unminified
+
 
 ### Query DB
 

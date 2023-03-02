@@ -52,7 +52,9 @@ data class Room(
         WATER_NO_SWIM("water_no_swim", 7),
         UNDERWATER("underwater", 8),
         AIR("air", 9),
-        DESERT("desert", 10);
+        DESERT("desert", 10),
+        SWAMP("swamp", 11),
+        UNDERWATER_GROUND("underwater_ground", 12);
 
         companion object {
             fun fromId(value: Int) =
