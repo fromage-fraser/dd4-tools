@@ -1,6 +1,7 @@
 package dd4.mapmaker
 
 import dd4.core.file.AreaFileMapper
+import dd4.core.model.AreaSpecial
 import dd4.mapmaker.model.AreaMap
 import dd4.mapmaker.model.RoomAndArea
 import dd4.mapmaker.render.HtmlRenderer
@@ -17,7 +18,7 @@ class MapMaker(
         private val areaIds: List<String> = listOf(),
 ) {
     companion object {
-        const val VERSION = "0.2"
+        const val VERSION = "0.3"
     }
 
     fun generate() {
@@ -25,7 +26,8 @@ class MapMaker(
 
         val allAreaFiles = areaFileMapper.readFromFile(areaFileName)
                 .filter { it.area != null }
-                .filter { it.area?.isClanHeadquarters() == false }
+                .filter { it.area?.isClanHeadquarters() != true }
+                .filter { it.areaSpecial?.isFlagged(AreaSpecial.AreaFlag.HIDDEN) != true }
                 .filter { it.rooms.isNotEmpty() }
 
         val areaFilesToMap = allAreaFiles

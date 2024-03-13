@@ -9,12 +9,12 @@ data class AreaSpecial(
     enum class AreaFlag(
             @JsonValue val tag: String,
     ) {
-        AREA_FLAG_SCHOOL("school"),
-        AREA_FLAG_NO_QUEST("no_quest"),
-        AREA_FLAG_HIDDEN("hidden"),
-        AREA_FLAG_SAFE("safe"),
-        AREA_FLAG_NO_TELEPORT("no_teleport"),
-        AREA_FLAG_NO_MAGIC("no_magic");
+        SCHOOL("school"),
+        NO_QUEST("no_quest"),
+        HIDDEN("hidden"),
+        SAFE("safe"),
+        NO_TELEPORT("no_teleport"),
+        NO_MAGIC("no_magic");
 
         companion object {
             fun fromTag(value: String) =
@@ -28,4 +28,6 @@ data class AreaSpecial(
             fun findByTag(value: String) = values().find { it.tag == value }
         }
     }
+
+    fun isFlagged(flag: AreaFlag): Boolean = flags.contains(flag)
 }

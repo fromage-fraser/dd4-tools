@@ -255,7 +255,7 @@ class QueryDbGenerator(
             currentLevelForItemLookup[itemVnum] = currentItemLevel
         }
 
-        if (areaSpecial?.flags?.contains(AreaSpecial.AreaFlag.AREA_FLAG_SCHOOL) == true
+        if (areaSpecial?.isFlagged(AreaSpecial.AreaFlag.SCHOOL) == true
                 && currentItemLevel <= SCHOOL_LEVEL_MAX) {
             levelMin = 1
             levelMax = 1

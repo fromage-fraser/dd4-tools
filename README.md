@@ -26,6 +26,10 @@ Creates static HTML maps from parsed area files.
 **NOTE:** These maps are far from perfect and have various layout issues.
 However, they are generally "good enough". Lots to improve here!
 
+Some areas are excluded from the map making process, including clan headquarters and "hidden" areas.
+"Hidden" areas are typically not able to be directly explored by players: they are usually just containers
+for special objects and mobs.
+
 ### Area Query
 
 Generates a specialised area entity database for use in an external query tool.
