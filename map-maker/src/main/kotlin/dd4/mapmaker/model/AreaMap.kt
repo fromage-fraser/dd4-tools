@@ -5,7 +5,7 @@ import dd4.core.model.Room
 
 class AreaMap(
         val id: String,
-        val area: Area
+        val area: Area,
 ) {
     val fragments: MutableList<Fragment> = mutableListOf()
 

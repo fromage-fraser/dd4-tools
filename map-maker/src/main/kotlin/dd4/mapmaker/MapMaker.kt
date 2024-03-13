@@ -14,7 +14,7 @@ class MapMaker(
         private val dieOnError: Boolean = false,
         private val progressiveRender: Boolean = false,
         private val mapDebug: Boolean = false,
-        private val areaIds: List<String> = listOf()
+        private val areaIds: List<String> = listOf(),
 ) {
     companion object {
         const val VERSION = "0.2"
@@ -46,8 +46,10 @@ class MapMaker(
 
         for (areaFile in areaFilesToMap) {
             try {
-                val generator = SingleAreaMapGenerator(areaFile, roomVnumLookup, renderer, outputDirPath, verbose,
-                        progressiveRender, mapDebug)
+                val generator = SingleAreaMapGenerator(
+                        areaFile, roomVnumLookup, renderer, outputDirPath, verbose,
+                        progressiveRender, mapDebug,
+                )
                 val areaMap = generator.generate()
                 areaMaps.add(areaMap)
             }

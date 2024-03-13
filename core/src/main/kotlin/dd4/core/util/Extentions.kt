@@ -1,6 +1,6 @@
 package dd4.core.util
 
-import java.util.Locale
+import java.util.*
 
 fun String.upperCaseFirst(): String =
         this.replaceFirstChar {

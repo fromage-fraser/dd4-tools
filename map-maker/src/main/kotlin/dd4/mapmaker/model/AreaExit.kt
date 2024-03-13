@@ -9,5 +9,5 @@ data class AreaExit(
         val room: Room,
         val exit: Exit,
         val targetArea: Area,
-        val targetSourceFile: SourceFile
+        val targetSourceFile: SourceFile,
 )

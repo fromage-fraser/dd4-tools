@@ -21,7 +21,7 @@ data class Mobile(
 ) {
     enum class Sex(
             @JsonValue val tag: String,
-            val id: Int
+            val id: Int,
     ) {
         NEUTRAL("neutral", 0),
         MALE("male", 1),
@@ -40,7 +40,7 @@ data class Mobile(
 
     enum class ActFlag(
             @JsonValue val tag: String,
-            val bit: ULong
+            val bit: ULong,
     ) {
         NPC("npc", 0x1u),
         SENTINEL("sentinel", 0x2u),
@@ -78,7 +78,7 @@ data class Mobile(
 
     enum class EffectFlag(
             @JsonValue val tag: String,
-            val bit: ULong
+            val bit: ULong,
     ) {
         BLIND("blind", 0x1u),
         INVISIBLE("invisible", 0x2u),
@@ -124,7 +124,7 @@ data class Mobile(
 
     enum class BodyFormFlag(
             @JsonValue val tag: String,
-            val bit: ULong
+            val bit: ULong,
     ) {
         NO_HEAD("no_head", 0x1u),
         NO_EYES("no_eyes", 0x2u),
@@ -144,7 +144,7 @@ data class Mobile(
 
     data class TaughtSkill(
             val level: Int,
-            val skill: String
+            val skill: String,
     )
 
     @JsonIgnore

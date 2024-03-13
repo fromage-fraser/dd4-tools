@@ -13,7 +13,7 @@ import java.lang.Integer.min
 
 class QueryDbGenerator(
         private val areaFilePath: String,
-        private val areaFileMapper: AreaFileMapper
+        private val areaFileMapper: AreaFileMapper,
 ) {
     private companion object {
         const val ITEM_LEVEL_VERSUS_MOBILE_MODIFIER = -2
@@ -60,12 +60,18 @@ class QueryDbGenerator(
                     Reset.Type.OBJECT_TO_ROOM -> processObjectToRoomReset(area, reset, queryDb, entityLookup)
                     Reset.Type.OBJECT_TO_ROOM_EXTENDED ->
                         processObjectToRoomExtendedReset(area, reset, queryDb, entityLookup)
+
                     Reset.Type.OBJECT_TO_MOBILE_EQUIPMENT,
-                    Reset.Type.OBJECT_TO_MOBILE_INVENTORY ->
+                    Reset.Type.OBJECT_TO_MOBILE_INVENTORY,
+                    ->
                         processObjectToMobileReset(areaSpecial, reset, queryDb, entityLookup)
+
                     Reset.Type.OBJECT_TO_OBJECT -> processObjectToObjectReset(reset, queryDb, entityLookup)
                     Reset.Type.RANDOMIZE_EXITS,
-                    Reset.Type.DOOR -> {}
+                    Reset.Type.DOOR,
+                    -> {
+                    }
+
                     else -> TODO("Unsupported reset type: ${reset.type}")
                 }
             }
@@ -90,7 +96,7 @@ class QueryDbGenerator(
             mobProg.mobProg.lines().forEach { line ->
                 MPOLOAD_PATTERN.matchEntire(line)?.let { match ->
                     val itemVnum = match.groupValues[1].toInt()
-                    val level = when(val levelRaw = match.groupValues[2]) {
+                    val level = when (val levelRaw = match.groupValues[2]) {
                         "" -> mobile.level
                         else -> levelRaw.toInt()
                     }
@@ -149,7 +155,7 @@ class QueryDbGenerator(
             area: Area,
             reset: Reset,
             queryDb: QueryDb,
-            entityLookup: EntityLookup
+            entityLookup: EntityLookup,
     ) {
         // E: <object vnum> <object level> <room vnum> <max count in room>
         val itemVnum = reset.arg0
@@ -177,7 +183,7 @@ class QueryDbGenerator(
             areaSpecial: AreaSpecial?,
             reset: Reset,
             queryDb: QueryDb,
-            entityLookup: EntityLookup
+            entityLookup: EntityLookup,
     ) {
         // E: Values: - <object vnum> - <wear location>
         // G: Values: - <object vnum> - -
@@ -195,32 +201,40 @@ class QueryDbGenerator(
                 when (item.type) {
                     Item.Type.PILL,
                     Item.Type.PAINT,
-                    Item.Type.POTION -> {
+                    Item.Type.POTION,
+                    -> {
                         levelMin = 0
                         levelMax = 10
                     }
+
                     Item.Type.SCROLL,
-                    Item.Type.ARMOUR -> {
+                    Item.Type.ARMOUR,
+                    -> {
                         levelMin = 5
                         levelMax = 15
                     }
+
                     Item.Type.WAND -> {
                         levelMin = 10
                         levelMax = 20
                     }
+
                     Item.Type.STAFF -> {
                         levelMin = 15
                         levelMax = 25
                     }
+
                     Item.Type.WEAPON -> {
                         when (reset.type) {
                             Reset.Type.OBJECT_TO_MOBILE_INVENTORY -> {
                                 levelMin = 5
                                 levelMax = 15
                             }
+
                             else -> {}
                         }
                     }
+
                     else -> {
                         levelMin = 0
                         levelMax = 0
@@ -255,14 +269,14 @@ class QueryDbGenerator(
                 levelMin = levelMin,
                 levelMax = levelMax,
                 inRoom = room,
-                carriedBy = mobile
+                carriedBy = mobile,
         )
     }
 
     private fun processObjectToObjectReset(
             reset: Reset,
             queryDb: QueryDb,
-            entityLookup: EntityLookup
+            entityLookup: EntityLookup,
     ) {
         // P: - <object to place vnum> - <container object vnum>
         val itemVnum = reset.arg1
@@ -288,5 +302,5 @@ class QueryDbGenerator(
     }
 
     private fun validLevel(level: Int, max: Int = Level.HERO): Int =
-        min(max(level, 0), max)
+            min(max(level, 0), max)
 }

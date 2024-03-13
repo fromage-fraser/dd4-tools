@@ -4,7 +4,6 @@ A collection of tools for parsing and analysing data files used by the Dragons D
 
 The MUD server code can be found at [github.com/fromage-fraser/dd4](https://github.com/fromage-fraser/dd4).
 
-
 ## Tools
 
 Tools are a collection of Kotlin programs. They run on the JVM and target Java 11.
@@ -31,14 +30,12 @@ However, they are generally "good enough". Lots to improve here!
 
 Generates a specialised area entity database for use in an external query tool.
 
-
 ## Sample data
 
 The _sample-data/_ directory is used by the Makefile to look for MUD area files.
 It is empty in this repository: the _area/_ directory from the _dd4_ repository can be copied there.
 Sample data are not required to run the tools: you can manually specify the location of source area data.
 But you may wish to use `make` as it is more convenient.
-
 
 ## Build
 
@@ -53,7 +50,6 @@ Build the tools:
     make build
 
 Tool JARs will be copied to the _output/lib/_ directory.
-
 
 ## Usage
 
@@ -72,7 +68,6 @@ General usage:
 
     java -jar output/lib/area-parser.jar --help
 
-
 ### Check area files
 
 Check area data. Provides some basic linting. Uses parsed area data as input.
@@ -86,7 +81,6 @@ General usage:
     java -jar output/lib/area-checker.jar --input-file path/to/parsed/areas.yml
 
     java -jar output/lib/area-checker.jar --help
-
 
 ### Create maps
 
@@ -102,7 +96,6 @@ For full usage:
 
     java -jar output/lib/map-maker.jar --help
 
-
 This process requires the `html-minifier` Javascript library to be installed:
 
     npm install html-minifier -g
@@ -117,7 +110,6 @@ Note that maps are quite large if not minified.
 The following is convenient for regenerating and checking maps quickly:
 
     make clean-output maps-unminified
-
 
 ### Query DB
 

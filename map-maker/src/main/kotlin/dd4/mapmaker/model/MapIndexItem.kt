@@ -4,5 +4,5 @@ data class MapIndexItem(
         val name: String,
         val author: String,
         val levelDescription: String,
-        val link: String
+        val link: String,
 )

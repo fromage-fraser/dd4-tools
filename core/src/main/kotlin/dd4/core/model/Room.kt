@@ -10,11 +10,11 @@ data class Room(
         val flags: Set<Flag>,
         val sectorType: SectorType,
         val exits: Map<Direction, Exit>,
-        val extraDescriptions: List<ExtraDescription>
+        val extraDescriptions: List<ExtraDescription>,
 ) {
     enum class Flag(
             @JsonValue val tag: String,
-            val bit: ULong
+            val bit: ULong,
     ) {
         DARK("dark", 0x1u),
         NO_MOB("no_mob", 0x4u),
@@ -43,7 +43,7 @@ data class Room(
 
     enum class SectorType(
             @JsonValue val tag: String,
-            val id: Int
+            val id: Int,
     ) {
         UNKNOWN("unknown", -1),
         INSIDE("inside", 0),
@@ -75,7 +75,7 @@ data class Room(
 
     data class ExtraDescription(
             val keywords: String,
-            val description: String
+            val description: String,
     )
 
     override fun toString(): String {

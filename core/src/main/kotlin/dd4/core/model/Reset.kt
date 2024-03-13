@@ -8,11 +8,11 @@ data class Reset(
         val arg1: Int,
         val arg2: Int,
         val arg3: Int,
-        val comment: String
+        val comment: String,
 ) {
     enum class Type(
             @JsonValue val tag: String,
-            val id: Char
+            val id: Char,
     ) {
         // Values: - <mobile vnum> <max count> <room vnum>
         MOBILE_TO_ROOM("mobile_to_room", 'M'),

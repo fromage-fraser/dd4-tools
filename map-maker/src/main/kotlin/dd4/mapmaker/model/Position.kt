@@ -4,7 +4,7 @@ import dd4.core.model.Direction
 
 data class Position(
         val x: Int,
-        val y: Int
+        val y: Int,
 ) {
     companion object {
         val ORIGIN = Position(0, 0)
@@ -18,6 +18,7 @@ data class Position(
             when (direction) {
                 Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST ->
                     Position(x + direction.deltaX, y + direction.deltaY)
+
                 else -> throw IllegalArgumentException("Unsupported direction: $direction")
             }
 }

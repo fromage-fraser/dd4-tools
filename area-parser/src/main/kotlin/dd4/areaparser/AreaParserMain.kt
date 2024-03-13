@@ -13,28 +13,28 @@ fun main(args: Array<String>) {
             ArgType.String,
             fullName = "input-dir",
             shortName = "i",
-            description = "Input file directory"
+            description = "Input file directory",
     ).required()
 
     val areaListFileName = argParser.option(
             ArgType.String,
             fullName = "area-list",
             shortName = "a",
-            description = "Area list file"
+            description = "Area list file",
     ).default("area.lst")
 
     val outputFilePath = argParser.option(
             ArgType.String,
             fullName = "output-file",
             shortName = "o",
-            description = "Output file"
+            description = "Output file",
     ).required()
 
     val verbose = argParser.option(
             ArgType.Boolean,
             fullName = "verbose",
             shortName = "v",
-            description = "Verbose logging"
+            description = "Verbose logging",
     ).default(false)
 
     argParser.parse(args)

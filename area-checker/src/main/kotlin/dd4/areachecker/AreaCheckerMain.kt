@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
             ArgType.String,
             fullName = "input-file",
             shortName = "i",
-            description = "Input area file"
+            description = "Input area file",
     ).required()
 
     argParser.parse(args)
