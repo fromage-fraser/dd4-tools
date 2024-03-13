@@ -128,15 +128,14 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
 
         val unparsed = firstChar + readWhile { it.isDigit() || it == Markup.BIT_DELIMITER }
 
-        if (unparsed.contains(Markup.BIT_DELIMITER)) {
-            return unparsed.split(Markup.BIT_DELIMITER)
-                    .filter { it.isNotBlank() }
-                    .map { it.toULong() }
-                    .sum()
-        }
+        try {
+            if (unparsed.contains(Markup.BIT_DELIMITER)) {
+                return unparsed.split(Markup.BIT_DELIMITER)
+                        .filter { it.isNotBlank() }
+                        .sumOf { it.toULong() }
+            }
 
-        return try {
-            unparsed.toULong()
+            return unparsed.toULong()
         }
         catch (e: Exception) {
             throw ParseError("Unable to read bits from value '$unparsed' (too large?)", this, e)
