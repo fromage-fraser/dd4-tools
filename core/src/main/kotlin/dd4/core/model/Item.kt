@@ -70,7 +70,11 @@ data class Item(
         DEFENSIVE_TURRET_MODULE("defensive_turret_module", 48),
         TURRET("turret", 49),
         COMBAT_PULSE("combat_pulse", 50),
-        DEFENSIVE_PULSE("defensive_pulse", 51);
+        DEFENSIVE_PULSE("defensive_pulse", 51),
+        PIPE("pipe", 52),
+        PIPE_CLEANER("pipe_cleaner", 53),
+        SMOKEABLE("smokeable", 54),
+        REMAINS("remains", 55);
 
         companion object {
             fun fromId(value: Int) =
@@ -121,6 +125,10 @@ data class Item(
         ANTI_SHAPE_SHIFTER("anti_shape_shifter", 0x20000000u),
         BOW("bow", 0x40000000u),
         ANTI_SMITHY("anti_smithy", 0x400000000u),
+        DEPLOYED("deployed", 0x800000000u),
+        RUNE("rune", 0x1000000000u),
+        DONOT_RANDOMISE("donot_randomise", 0x2000000000u),
+        WEAK_RANDOMISE("weak_randomise", 0x8000000000u),
         CURSED("cursed", 0x2000000000000000u);
 
         companion object {
@@ -248,7 +256,8 @@ data class Item(
         CHOP("chop", 13),
         RAKE("rake", 14),
         SWIPE("swipe", 15),
-        STING("sting", 16);
+        STING("sting", 16),
+        SCOOP("scoop", 17);
 
         companion object {
             fun fromId(value: Int) =

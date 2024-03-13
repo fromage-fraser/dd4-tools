@@ -12,7 +12,9 @@ data class AreaSpecial(
         AREA_FLAG_SCHOOL("school"),
         AREA_FLAG_NO_QUEST("no_quest"),
         AREA_FLAG_HIDDEN("hidden"),
-        AREA_FLAG_SAFE("safe");
+        AREA_FLAG_SAFE("safe"),
+        AREA_FLAG_NO_TELEPORT("no_teleport"),
+        AREA_FLAG_NO_MAGIC("no_magic");
 
         companion object {
             fun fromTag(value: String) =
