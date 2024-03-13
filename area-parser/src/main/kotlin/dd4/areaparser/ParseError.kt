@@ -11,8 +11,8 @@ class ParseError(message: String, e: Exception?) : RuntimeException(message, e) 
 
     constructor(message: String) : this(message, null)
 
-    constructor(message: String, reader: AreaFileReader) : this("$message (context: ${readerContext(reader)})")
+    constructor(message: String, reader: AreaFileReader) : this(message, reader, null)
 
-    constructor(message: String, reader: AreaFileReader, e: Exception) :
+    constructor(message: String, reader: AreaFileReader, e: Exception?) :
             this("$message (context: ${readerContext(reader)})", e)
 }
