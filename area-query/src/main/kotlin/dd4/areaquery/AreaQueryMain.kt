@@ -14,21 +14,21 @@ fun main(args: Array<String>) {
             ArgType.String,
             fullName = "input-file",
             shortName = "i",
-            description = "Input area file"
+            description = "Input area file",
     ).required()
 
     val outputFilePath = argParser.option(
             ArgType.String,
             fullName = "output-file",
             shortName = "o",
-            description = "Output file"
+            description = "Output file",
     ).required()
 
     val outputFormat = argParser.option(
             ArgType.Choice<FileFormat>(),
             fullName = "output-format",
             shortName = "f",
-            description = "Output format"
+            description = "Output format",
     ).default(FileFormat.JSON)
 
     argParser.parse(args)

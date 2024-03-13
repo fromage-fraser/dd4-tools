@@ -95,6 +95,7 @@ class Fragment {
                 connectorCell.setLinked(Direction.NORTH)
                 connectorCell.setLinked(Direction.SOUTH)
             }
+
             is EastWestConnectorCell -> {
                 connectorCell.setLinked(Direction.EAST)
                 connectorCell.setLinked(Direction.WEST)

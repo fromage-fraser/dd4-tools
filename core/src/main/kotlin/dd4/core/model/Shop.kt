@@ -7,7 +7,7 @@ data class Shop(
         val sellProfit: Int,
         val openingHour: Int,
         val closingHour: Int,
-        val comment: String
+        val comment: String,
 ) {
     companion object {
         const val SHOP_BUY_TYPE_SLOTS = 5

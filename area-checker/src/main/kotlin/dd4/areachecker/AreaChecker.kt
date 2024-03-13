@@ -5,7 +5,7 @@ import dd4.core.model.SourceFile
 
 class AreaChecker(
         private val areaFileName: String,
-        private val areaFileMapper: AreaFileMapper
+        private val areaFileMapper: AreaFileMapper,
 ) {
     fun check() {
         val areaFiles = areaFileMapper.readFromFile(areaFileName)
@@ -24,27 +24,36 @@ class AreaChecker(
         val result = CheckResult()
 
         for (item in sourceFile.objects) {
-            if (item.fullDescription.contains(Regex("[\r\n\t]")) ) {
-                error("object #${item.vnum} \"${item.shortDescription}\": " +
-                        "full description has bad characters => \"${escape(item.fullDescription)}\"",
-                        sourceFile, result)
+            if (item.fullDescription.contains(Regex("[\r\n\t]"))) {
+                error(
+                        "object #${item.vnum} \"${item.shortDescription}\": " +
+                                "full description has bad characters => \"${escape(item.fullDescription)}\"",
+                        sourceFile, result,
+                )
             }
 
-            if (item.shortDescription.matches(Regex("^.*[\\s.,;:!?]\\s*$")) ) {
-                error("object #${item.vnum}: " +
-                        "short description ends with bad characters => \"${escape(item.shortDescription)}\"",
-                        sourceFile, result)
+            if (item.shortDescription.matches(Regex("^.*[\\s.,;:!?]\\s*$"))) {
+                error(
+                        "object #${item.vnum}: " +
+                                "short description ends with bad characters => \"${escape(item.shortDescription)}\"",
+                        sourceFile, result,
+                )
             }
 
-            if (item.shortDescription.matches(Regex("^(A|An|The|Some)\\b.*$")) ) {
-                warning("object #${item.vnum}: " +
-                        "short description might be wrongly capitalised => \"${escape(item.shortDescription)}\"",
-                        sourceFile, result)
+            if (item.shortDescription.matches(Regex("^(A|An|The|Some)\\b.*$"))) {
+                warning(
+                        "object #${item.vnum}: " +
+                                "short description might be wrongly capitalised => \"${escape(item.shortDescription)}\"",
+                        sourceFile, result,
+                )
             }
 
             if (item.fullDescription.isBlank()) {
-                warning("object #${item.vnum} \"${item.shortDescription}\": " +
-                        "blank full description (hidden)", sourceFile, result)
+                warning(
+                        "object #${item.vnum} \"${item.shortDescription}\": " +
+                                "blank full description (hidden)",
+                        sourceFile, result,
+                )
             }
         }
 

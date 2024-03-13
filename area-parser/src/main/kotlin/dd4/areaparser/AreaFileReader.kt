@@ -28,7 +28,8 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
 
         return try {
             Section.fromTag(tag)
-        } catch (e: NoSuchElementException) {
+        }
+        catch (e: NoSuchElementException) {
             throw ParseError("Unrecognised section: $tag", this)
         }
     }
@@ -44,7 +45,8 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
 
         return try {
             tag.toInt()
-        } catch (e: NumberFormatException) {
+        }
+        catch (e: NumberFormatException) {
             throw ParseError("Bad VNUM: $tag", this)
         }
     }

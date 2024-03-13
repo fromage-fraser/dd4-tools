@@ -8,11 +8,11 @@ data class Exit(
         val keywords: String,
         val flags: Set<Flag>,
         val destinationVnum: Int,
-        val keyVnum: Int
+        val keyVnum: Int,
 ) {
     enum class Flag(
             @JsonValue val tag: String,
-            val bit: Int
+            val bit: Int,
     ) {
         DOOR("door", 0x1),
         CLOSED("closed", 0x2),

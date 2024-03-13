@@ -7,10 +7,10 @@ import dd4.core.model.Room
 
 abstract class Cell(
         var position: Position,
-        var label: String? = null
+        var label: String? = null,
 ) {
     enum class Edge(
-            val style: String
+            val style: String,
     ) {
         NONE("none"),
         OPEN("open"),
@@ -23,7 +23,7 @@ abstract class Cell(
     data class Link(
             val state: State,
             val targetLabel: String? = null,
-            val description: String? = null
+            val description: String? = null,
     ) {
         enum class State {
             NONE,
@@ -63,7 +63,7 @@ abstract class Cell(
             Direction.EAST to Link(Link.State.NONE),
             Direction.WEST to Link(Link.State.NONE),
             Direction.UP to Link(Link.State.NONE),
-            Direction.DOWN to Link(Link.State.NONE)
+            Direction.DOWN to Link(Link.State.NONE),
     )
 
     fun setNoLink(direction: Direction) {
@@ -106,12 +106,12 @@ class RoomCell(
         position: Position,
         val room: Room,
         val flags: Set<Flag> = setOf(),
-        label: String? = null
+        label: String? = null,
 ) : Cell(position, label) {
 
     enum class Flag(
             val style: String,
-            val description: String
+            val description: String,
     ) {
         RANDOMIZED_EXITS("randomized-exits", "Randomized exits"),
         NO_MOBILES("no-mobiles", "No mobiles"),
@@ -150,7 +150,7 @@ class AreaExitCell(
         position: Position,
         val area: Area,
         val directionToExitRoom: Direction,
-        val mapReference: String
+        val mapReference: String,
 ) : Cell(position) {
 
     override val style = "area-exit"
@@ -165,7 +165,7 @@ class AreaExitCell(
 
 
 class NorthSouthConnectorCell(
-        position: Position
+        position: Position,
 ) : Cell(position) {
 
     override val style = "north-south-connector"
@@ -183,7 +183,7 @@ class NorthSouthConnectorCell(
 
 
 class EastWestConnectorCell(
-        position: Position
+        position: Position,
 ) : Cell(position) {
 
     override val style = "east-west-connector"

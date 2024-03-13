@@ -7,5 +7,5 @@ data class UnlinkedExit(
         val exit: Exit,
         val exitRoom: Room,
         val targetRoom: Room,
-        val forceJump: Boolean = false
+        val forceJump: Boolean = false,
 )

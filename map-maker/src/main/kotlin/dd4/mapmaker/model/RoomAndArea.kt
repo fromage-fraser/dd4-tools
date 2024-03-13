@@ -6,7 +6,7 @@ import dd4.core.model.SourceFile
 
 class RoomAndArea(
         val room: Room,
-        val sourceFile: SourceFile
+        val sourceFile: SourceFile,
 ) {
     init {
         requireNotNull(sourceFile.area)

@@ -3,7 +3,7 @@ package dd4.core.model
 data class SpecialFunction(
         val mobileVnum: Int,
         val function: String,
-        val comment: String
+        val comment: String,
 ) {
     companion object {
         // Healer

@@ -1,6 +1,6 @@
 package dd4.core.model
 
-data class SourceFile (
+data class SourceFile(
         val id: String,
         val fileName: String,
         val filePath: String,

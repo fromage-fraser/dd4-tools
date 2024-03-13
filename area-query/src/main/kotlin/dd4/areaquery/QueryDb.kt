@@ -77,7 +77,7 @@ data class QueryDbItem(
                         inRoom = inRoom,
                         inContainer = inContainer,
                         carriedBy = carriedBy,
-                )
+                ),
         )
     }
 
@@ -91,7 +91,7 @@ data class QueryDbItem(
                         level = level,
                         mobile = mobile,
                         inRoom = inRoom,
-                )
+                ),
         )
     }
 }
@@ -107,7 +107,7 @@ data class QueryDbItemReset(
 
 data class QueryDbMobile(
         val mobile: Mobile,
-        val shop: Shop?
+        val shop: Shop?,
 )
 
 data class QueryDbItemMobProg(

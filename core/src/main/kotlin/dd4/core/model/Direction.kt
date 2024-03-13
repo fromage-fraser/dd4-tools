@@ -8,14 +8,14 @@ enum class Direction(
         val description: String,
         val deltaX: Int,
         val deltaY: Int,
-        val deltaZ: Int
+        val deltaZ: Int,
 ) {
-    NORTH ("n", 0, "north",  0,  1,  0),
-    EAST  ("e", 1, "east",   1,  0,  0),
-    SOUTH ("s", 2, "south",  0, -1,  0),
-    WEST  ("w", 3, "west",  -1,  0,  0),
-    UP    ("u", 4, "up",     0,  0,  1),
-    DOWN  ("d", 5, "down",   0,  0, -1);
+    NORTH("n", 0, "north", 0, 1, 0),
+    EAST("e", 1, "east", 1, 0, 0),
+    SOUTH("s", 2, "south", 0, -1, 0),
+    WEST("w", 3, "west", -1, 0, 0),
+    UP("u", 4, "up", 0, 0, 1),
+    DOWN("d", 5, "down", 0, 0, -1);
 
     companion object {
         fun fromId(value: Int) =

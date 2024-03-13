@@ -26,7 +26,7 @@ class QueryDbMapper {
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
 
     fun writeToFile(queryDb: QueryDb, outputFilePath: String, fileFormat: FileFormat) {
-        val mapper = when(fileFormat) {
+        val mapper = when (fileFormat) {
             FileFormat.YAML -> yamlObjectMapper
             FileFormat.JSON -> jsonObjectMapper
         }

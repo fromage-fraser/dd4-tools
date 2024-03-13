@@ -24,7 +24,7 @@ data class Item(
 ) {
     enum class Type(
             @JsonValue val tag: String,
-            val id: Int
+            val id: Int,
     ) {
         LIGHT("light", 1),
         SCROLL("scroll", 2),
@@ -91,7 +91,7 @@ data class Item(
 
     enum class ExtraFlag(
             @JsonValue val tag: String,
-            val bit: ULong
+            val bit: ULong,
     ) {
         GLOW("glow", 0x1u),
         HUM("hum", 0x2u),
@@ -138,7 +138,7 @@ data class Item(
 
     enum class WearFlag(
             @JsonValue val tag: String,
-            val bit: ULong
+            val bit: ULong,
     ) {
         TAKE("take", 0x1u),
         WEAR_FINGER("wear_finger", 0x2u),
@@ -170,7 +170,7 @@ data class Item(
 
     enum class EffectAttribute(
             @JsonValue val tag: String,
-            val id: Int
+            val id: Int,
     ) {
         NONE("none", 0),
         STRENGTH("strength", 1),
@@ -238,7 +238,7 @@ data class Item(
 
     enum class WeaponAttackType(
             @JsonValue val tag: String,
-            val id: Int
+            val id: Int,
     ) {
         HIT("hit", 0),
         SLICE("slice", 1),
@@ -272,12 +272,12 @@ data class Item(
 
     data class ExtraDescription(
             val keywords: String,
-            val description: String
+            val description: String,
     )
 
     data class Effect(
             val attribute: EffectAttribute,
-            val modifier: Int
+            val modifier: Int,
     ) {
         override fun toString(): String = attribute.tag + ":" + Format.modifier(modifier)
     }
@@ -286,19 +286,19 @@ data class Item(
     data class Trap(
             val damage: Int,
             val effect: Int,
-            val charge: Int
+            val charge: Int,
     )
 
     //TODO: Map flags
     data class Ego(
-            val flags: Int
+            val flags: Int,
     )
 
     data class Values(
             val value0: String,
             val value1: String,
             val value2: String,
-            val value3: String
+            val value3: String,
     )
 
     data class TypeProperties(

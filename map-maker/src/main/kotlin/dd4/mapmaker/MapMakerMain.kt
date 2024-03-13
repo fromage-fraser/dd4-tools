@@ -14,21 +14,21 @@ fun main(args: Array<String>) {
             ArgType.String,
             fullName = "input-file",
             shortName = "i",
-            description = "Input area file"
+            description = "Input area file",
     ).required()
 
     val outputDirPath = argParser.option(
             ArgType.String,
             fullName = "output-dir",
             shortName = "o",
-            description = "Output directory"
+            description = "Output directory",
     ).required()
 
     val verbose = argParser.option(
             ArgType.Boolean,
             fullName = "verbose",
             shortName = "v",
-            description = "Verbose logging"
+            description = "Verbose logging",
     ).default(false)
 
     argParser.parse(args)
@@ -38,7 +38,7 @@ fun main(args: Array<String>) {
             outputDirPath.value,
             AreaFileMapper(),
             HtmlRenderer(),
-            verbose.value
+            verbose.value,
     )
 
     mapMaker.generate()

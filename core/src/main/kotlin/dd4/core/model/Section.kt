@@ -3,7 +3,7 @@ package dd4.core.model
 import com.fasterxml.jackson.annotation.JsonValue
 
 enum class Section(
-        @JsonValue val tag: String
+        @JsonValue val tag: String,
 ) {
     AREA("AREA"),
     AREA_SPECIAL("AREA_SPECIAL"),

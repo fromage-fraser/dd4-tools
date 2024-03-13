@@ -29,7 +29,7 @@ import java.nio.file.Paths
 class AreaParser(
         private val inputDirName: String,
         private val areaListFileName: String,
-        private val verbose: Boolean = false
+        private val verbose: Boolean = false,
 ) {
     private companion object {
         const val MOB_PROG_FILE_DIR = "MOBProgs"
@@ -38,12 +38,14 @@ class AreaParser(
     fun parse(): List<SourceFile> {
         val areaFileNames = parseAreaList()
         val areaFiles = areaFileNames.map { parseAreaFile(it) }
-        info("Read ${areaFiles.size} area files, " +
-                areaFiles.map { it.mobiles.size }.sum() + " mobiles, " +
-                areaFiles.map { it.objects.size }.sum() + " objects, " +
-                areaFiles.map { it.rooms.size }.sum() + " rooms, " +
-                areaFiles.map { it.resets.size }.sum() + " resets, " +
-                areaFiles.map { it.helps.size }.sum() + " helps")
+        info(
+                "Read ${areaFiles.size} area files, " +
+                        areaFiles.map { it.mobiles.size }.sum() + " mobiles, " +
+                        areaFiles.map { it.objects.size }.sum() + " objects, " +
+                        areaFiles.map { it.rooms.size }.sum() + " rooms, " +
+                        areaFiles.map { it.resets.size }.sum() + " resets, " +
+                        areaFiles.map { it.helps.size }.sum() + " helps",
+        )
         return areaFiles
     }
 
@@ -93,24 +95,28 @@ class AreaParser(
                             throw ParseError("$id: AREA section redefined in file $areaFileName", reader)
                         sourceFile.area = parseAreaSection(reader, id)
                     }
+
                     Section.AREA_SPECIAL -> {
                         // See note in AREA handling regarding redefinition.
                         if (sourceFile.areaSpecial != null)
                             throw ParseError("$id: AREA_SPECIAL section redefined in file $areaFileName", reader)
                         sourceFile.areaSpecial = parseAreaSpecialSection(reader)
                     }
+
                     Section.RECALL -> {
                         // See note in AREA handling regarding redefinition.
                         if (sourceFile.recall != null)
                             throw ParseError("$id: RECALL section redefined in file $areaFileName", reader)
                         sourceFile.recall = parseRecallSection(reader)
                     }
+
                     Section.MOBILES -> sourceFile.addMobiles(parseMobilesSection(sourceFile, reader))
                     Section.MOBPROGS -> {
                         val mobProgAssignments = parseMobProgsSection(reader)
                         sourceFile.addMobProgAssignments(mobProgAssignments)
                         sourceFile.addMobProgFiles(mobProgAssignments.map { loadMobProgFile(it.fileName) })
                     }
+
                     Section.OBJECTS -> sourceFile.addObjects(parseObjectsSection(sourceFile, reader))
                     Section.OBJECT_SETS -> sourceFile.addObjectSets(parseObjectSetsSection(sourceFile, reader))
                     Section.ROOMS -> sourceFile.addRooms(parseRoomsSection(sourceFile, reader))
@@ -118,6 +124,7 @@ class AreaParser(
                     Section.SHOPS -> sourceFile.addShops(parseShopsSection(sourceFile, reader))
                     Section.SPECIAL_FUNCTIONS ->
                         sourceFile.addSpecialFunctions(parseSpecialFunctionsSection(sourceFile, reader))
+
                     Section.HELPS -> sourceFile.addHelps(parseHelpsSection(reader))
                     Section.GAMES -> sourceFile.addGames(parseGamesSection(sourceFile, reader))
                 }
@@ -135,7 +142,7 @@ class AreaParser(
                 lowLevel = reader.readNumber(),
                 highLevel = reader.readNumber(),
                 enforcedLowLevel = reader.readNumber(),
-                enforcedHighLevel = reader.readNumber()
+                enforcedHighLevel = reader.readNumber(),
         )
     }
 
@@ -215,15 +222,17 @@ class AreaParser(
                                 MobProg(
                                         type = reader.readWord(),
                                         args = reader.readString(),
-                                        commands = reader.readString()
-                                )
+                                        commands = reader.readString(),
+                                ),
                         )
                     }
+
                     Markup.MOBILE_MOB_PROG_END_DELIMITER -> reader.readToEol()
                     Markup.MOBILE_TAUGHT_SKILLS_DELIMITER -> {
                         reader.readChar()
                         taughtSkills.add(Mobile.TaughtSkill(level = reader.readNumber(), skill = reader.readWord()))
                     }
+
                     Markup.MOBILE_SPEC_DELIMITER -> {
                         reader.readChar()
                         mobSpec = MobSpec(
@@ -231,6 +240,7 @@ class AreaParser(
                                 rank = reader.readString(),
                         )
                     }
+
                     Markup.SECTION_DELIMITER -> loop = false
                     null -> throw ParseError("End of file")
                     else -> throw ParseError("Unexpected char '$nextChar'", reader)
@@ -275,10 +285,11 @@ class AreaParser(
                                     type = nextChar,
                                     mobileVnum = reader.readNumber(),
                                     fileName = reader.readWord(),
-                                    comment = reader.readToEol()
-                            )
+                                    comment = reader.readToEol(),
+                            ),
                     )
                 }
+
                 Markup.MOB_PROG_END_OF_SECTION_DELIMITER -> loop = false
                 Markup.MOB_PROG_COMMENT_DELIMITER -> reader.readToEol()
                 null -> throw ParseError("End of file")
@@ -307,7 +318,7 @@ class AreaParser(
                         Item.Trap(
                                 damage = reader.readNumber(),
                                 effect = reader.readNumber(),
-                                charge = reader.readNumber()
+                                charge = reader.readNumber(),
                         )
                     else
                         null
@@ -315,7 +326,7 @@ class AreaParser(
             val ego =
                     if (extraFlags.contains(Item.ExtraFlag.EGO))
                         Item.Ego(
-                                flags = reader.readNumber()
+                                flags = reader.readNumber(),
                         )
                     else
                         null
@@ -341,19 +352,21 @@ class AreaParser(
                         extraDescriptions.add(
                                 Item.ExtraDescription(
                                         keywords = reader.readString(),
-                                        description = reader.readString()
-                                )
+                                        description = reader.readString(),
+                                ),
                         )
                     }
+
                     Markup.OBJECT_EFFECT_DELIMITER -> {
                         reader.readChar()
                         effects.add(
                                 Item.Effect(
                                         attribute = Item.EffectAttribute.fromId(reader.readNumber()),
-                                        modifier = reader.readNumber()
-                                )
+                                        modifier = reader.readNumber(),
+                                ),
                         )
                     }
+
                     null -> throw ParseError("End of file")
                     else -> loop = false
                 }
@@ -420,6 +433,7 @@ class AreaParser(
                         reader.readNumber()
                         reader.readNumber()
                     }
+
                     null -> throw ParseError("End of file")
                     else -> loop = false
                 }
@@ -444,28 +458,35 @@ class AreaParser(
             Item.Type.WEAPON -> {
                 try {
                     properties.weaponAttackType = Item.WeaponAttackType.fromId(values.value3.toInt())
-                } catch (e: Exception) {
+                }
+                catch (e: Exception) {
                     // This is probably bollocks
                     properties.weaponAttackType = Item.WeaponAttackType.HIT
                 }
             }
+
             Item.Type.POTION,
             Item.Type.SCROLL,
             Item.Type.PAINT,
-            Item.Type.PILL -> {
+            Item.Type.PILL,
+            -> {
                 properties.spellLevel = values.value0.toInt()
                 properties.spells = validSpells(values.value1, values.value2, values.value3)
             }
+
             Item.Type.STAFF,
-            Item.Type.WAND -> {
+            Item.Type.WAND,
+            -> {
                 properties.spellLevel = values.value0.toInt()
                 properties.maxCharges = values.value1.toInt()
                 properties.currentCharges = values.value2.toInt()
                 properties.spells = validSpells(values.value3)
             }
+
             Item.Type.CONTAINER -> {
                 properties.containerCapacity = values.value0.toInt()
             }
+
             else -> {}
         }
 
@@ -501,7 +522,7 @@ class AreaParser(
                                 keywords = reader.readString(),
                                 flags = Exit.Flag.fromLocks(reader.readNumber()),
                                 keyVnum = reader.readNumber(),
-                                destinationVnum = reader.readNumber()
+                                destinationVnum = reader.readNumber(),
                         )
 
                         if (exits.containsKey(direction)) {
@@ -509,14 +530,16 @@ class AreaParser(
                         }
                         exits[direction] = exit
                     }
+
                     Markup.ROOM_EXTRA_DESCRIPTION_DELIMITER -> {
                         extraDescriptions.add(
                                 Room.ExtraDescription(
                                         keywords = reader.readString(),
-                                        description = reader.readString()
-                                )
+                                        description = reader.readString(),
+                                ),
                         )
                     }
+
                     Markup.ROOM_END_OF_SECTION_DELIMITER -> loop = false
                     null -> throw ParseError("End of file")
                     else -> throw ParseError("Unexpected char '$nextChar'", reader)
@@ -530,7 +553,7 @@ class AreaParser(
                     flags = flags,
                     sectorType = sectorType,
                     exits = exits,
-                    extraDescriptions = extraDescriptions
+                    extraDescriptions = extraDescriptions,
             )
 
             debug("${sourceFile.id}: $room")
@@ -565,7 +588,7 @@ class AreaParser(
                                 Reset.Type.UNKNOWN_F -> 0
                                 else -> reader.readNumber()
                             },
-                            comment = reader.readToEol()
+                            comment = reader.readToEol(),
                     )
 
                     debug("${sourceFile.id}: $reset")
@@ -594,7 +617,7 @@ class AreaParser(
                     sellProfit = reader.readNumber(),
                     openingHour = reader.readNumber(),
                     closingHour = reader.readNumber(),
-                    comment = reader.readToEol()
+                    comment = reader.readToEol(),
             )
 
             debug("${sourceFile.id}: $shop")
@@ -616,15 +639,16 @@ class AreaParser(
                 Markup.SPECIAL_FUNCTION_END_OF_SECTION_DELIMITER -> loop = false
                 Markup.SPECIAL_FUNCTION_COMMENT_DELIMITER -> reader.readToEol()
                 Markup.SPECIAL_FUNCTION_MOBILE_DELIMITER -> {
-                    val specialFunction =  SpecialFunction(
+                    val specialFunction = SpecialFunction(
                             mobileVnum = reader.readNumber(),
                             function = reader.readWord(),
-                            comment = reader.readToEol()
+                            comment = reader.readToEol(),
                     )
 
                     debug("${sourceFile.id}: $specialFunction")
                     specialFunctions.add(specialFunction)
                 }
+
                 null -> throw ParseError("End of file")
                 else -> throw ParseError("Unexpected char '$nextChar'", reader)
             }
@@ -645,8 +669,8 @@ class AreaParser(
                     Help(
                             level = level,
                             keywords = keywords,
-                            text = reader.readString()
-                    )
+                            text = reader.readString(),
+                    ),
             )
         }
 
@@ -673,12 +697,13 @@ class AreaParser(
                     reader.readToEol()  // Comments
 
                     val game = Game(
-                            croupierVnum = croupierVnum
+                            croupierVnum = croupierVnum,
                     )
 
                     debug("${sourceFile.id}: $game")
                     games.add(game)
                 }
+
                 null -> throw ParseError("End of file")
                 else -> throw ParseError("Unexpected char '$nextChar'", reader)
             }
@@ -703,9 +728,10 @@ class AreaParser(
                                         type = reader.readWord(),
                                         args = reader.readString(),
                                         commands = reader.readString(),
-                                )
+                                ),
                         )
                     }
+
                     Markup.MOBILE_MOB_PROG_END_DELIMITER -> break
                     else -> throw ParseError("Unexpected character '$char' when reading mob prog file '$fileName")
                 }

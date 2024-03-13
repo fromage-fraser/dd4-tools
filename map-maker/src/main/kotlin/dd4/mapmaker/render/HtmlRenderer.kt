@@ -30,7 +30,7 @@ class HtmlRenderer {
                 "areaMap" to areaMap,
                 "options" to options,
                 "indexLink" to indexFileName(),
-                "buildInfo" to buildInfo()
+                "buildInfo" to buildInfo(),
         )
         template.process(model, fileWriter)
     }
@@ -44,13 +44,13 @@ class HtmlRenderer {
                     name = it.name(),
                     author = it.author(),
                     levelDescription = it.levelDescription() ?: "Unknown level",
-                    link = fileNameFor(it.id)
+                    link = fileNameFor(it.id),
             )
         }.sortedWith(compareBy { it.name.lowercase().removePrefix("the ") })
 
         val model = mapOf(
                 "items" to indexItems,
-                "buildInfo" to buildInfo()
+                "buildInfo" to buildInfo(),
         )
         template.process(model, fileWriter)
     }
