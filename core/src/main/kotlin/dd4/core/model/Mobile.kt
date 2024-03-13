@@ -65,6 +65,10 @@ data class Mobile(
         CLAN_GUARD("clan_guard", 0x400000u),
         NO_SUMMON("no_summon", 0x800000u),
         NO_EXPERIENCE("no_experience", 0x1000000u),
+        NO_HEAL("no_heal", 0x2000000u),
+        NO_FIGHT("no_fight", 0x4000000u),
+        OBJECT("object", 0x8000000u),
+        INVULNERABLE("invulnerable", 0x10000000u),
         UNKILLABLE("unkillable", 0x8000000000000000u);
 
         companion object {
@@ -109,6 +113,8 @@ data class Mobile(
         SWALLOWED("swallowed", 0x80000000u),
         NO_RECALL("no_recall", 0x100000000u),
         DAMAGE_OVER_TIME("damage_over_time", 0x200000000u),
+        PRONE("prone", 0x400000000u),
+        DAZED("dazed", 0x800000000u),
         SLOW("slow", 0x8000000000000000u);
 
         companion object {
@@ -128,7 +134,8 @@ data class Mobile(
         NO_SPEECH("no_speech", 0x20u),
         NO_CORPSE("no_corpse", 0x40u),
         HUGE("huge", 0x80u),
-        INORGANIC("inorganic", 0x100u);
+        INORGANIC("inorganic", 0x100u),
+        HAS_TAIL("has_tail", 0x200u);
 
         companion object {
             fun toSet(value: ULong) = values().filter { value.and(it.bit) != 0uL }.toSet()

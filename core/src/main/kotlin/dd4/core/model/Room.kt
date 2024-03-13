@@ -19,6 +19,9 @@ data class Room(
         DARK("dark", 0x1u),
         NO_MOB("no_mob", 0x4u),
         INDOORS("indoors", 0x8u),
+        VAULT("vault", 0x10u),
+        CRAFT("craft", 0x80u),
+        SPELLCRAFT("spellcraft", 0x100u),
         PRIVATE("private", 0x200u),
         SAFE("safe", 0x400u),
         SOLITARY("solitary", 0x800u),
@@ -30,6 +33,7 @@ data class Room(
         FREEZING("freezing", 0x20000u),
         BURNING("burning", 0x40000u),
         NO_MOUNT("no_mount", 0x80000u),
+        TOXIC("toxic", 0x100000u),
         NO_DROP("no_drop", 0x8000000000000000u);
 
         companion object {
