@@ -453,15 +453,15 @@ class AreaParser(
             Item.Type.SCROLL,
             Item.Type.PAINT,
             Item.Type.PILL -> {
-                properties.spellLevel = values.value0.toInt();
-                properties.spells = listOf(values.value1, values.value2, values.value3).filter { it.isNotBlank() }
+                properties.spellLevel = values.value0.toInt()
+                properties.spells = validSpells(values.value1, values.value2, values.value3)
             }
             Item.Type.STAFF,
             Item.Type.WAND -> {
-                properties.spellLevel = values.value0.toInt();
-                properties.maxCharges = values.value1.toInt();
-                properties.currentCharges = values.value2.toInt();
-                properties.spells = listOf(values.value3).filter { it.isNotBlank() }
+                properties.spellLevel = values.value0.toInt()
+                properties.maxCharges = values.value1.toInt()
+                properties.currentCharges = values.value2.toInt()
+                properties.spells = validSpells(values.value3)
             }
             Item.Type.CONTAINER -> {
                 properties.containerCapacity = values.value0.toInt()
@@ -471,6 +471,8 @@ class AreaParser(
 
         return properties
     }
+
+    private fun validSpells(vararg spells: String) = spells.filter { it.isNotBlank() && it != "0" }
 
     private fun parseRoomsSection(sourceFile: SourceFile, reader: AreaFileReader): List<Room> {
         val rooms = mutableListOf<Room>()
