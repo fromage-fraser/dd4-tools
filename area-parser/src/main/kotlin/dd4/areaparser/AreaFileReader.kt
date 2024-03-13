@@ -92,7 +92,7 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
     fun readString(): String {
         readWhitespace()
         val word = readWhile { it != Markup.STRING_DELIMITER }
-        readChar() ?: throw ParseError("Unterminated string: '${snippet(word)}")
+        readChar() ?: throw ParseError("Unterminated string: '${snippet(word)}", this)
         return word
     }
 
@@ -105,14 +105,18 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
 
         val unparsed = firstChar + readWhile { it.isDigit() || it == Markup.BIT_DELIMITER }
 
-        if (unparsed.contains(Markup.BIT_DELIMITER)) {
-            return unparsed.split(Markup.BIT_DELIMITER)
-                    .filter { it.isNotBlank() }
-                    .map { it.toInt() }
-                    .sum()
-        }
+        try {
+            if (unparsed.contains(Markup.BIT_DELIMITER)) {
+                return unparsed.split(Markup.BIT_DELIMITER)
+                        .filter { it.isNotBlank() }
+                        .sumOf { it.toInt() }
+            }
 
-        return unparsed.toInt()
+            return unparsed.toInt()
+        }
+        catch (e: Exception) {
+            throw ParseError("Unable to read number from value '$unparsed' (too large?)", this, e)
+        }
     }
 
     fun readBits(): ULong {
@@ -124,14 +128,18 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
 
         val unparsed = firstChar + readWhile { it.isDigit() || it == Markup.BIT_DELIMITER }
 
-        if (unparsed.contains(Markup.BIT_DELIMITER)) {
-            return unparsed.split(Markup.BIT_DELIMITER)
-                    .filter { it.isNotBlank() }
-                    .map { it.toULong() }
-                    .sum()
-        }
+        try {
+            if (unparsed.contains(Markup.BIT_DELIMITER)) {
+                return unparsed.split(Markup.BIT_DELIMITER)
+                        .filter { it.isNotBlank() }
+                        .sumOf { it.toULong() }
+            }
 
-        return unparsed.toULong()
+            return unparsed.toULong()
+        }
+        catch (e: Exception) {
+            throw ParseError("Unable to read bits from value '$unparsed' (too large?)", this, e)
+        }
     }
 
     fun readLetter(): Char {
