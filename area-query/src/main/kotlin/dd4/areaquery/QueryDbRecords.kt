@@ -47,6 +47,7 @@ data class ItemRecord(
         val currentCharges: Int?,
         val maxCharges: Int?,
         val containerCapacity: Int?,
+        val maxInstances: Int?,
 )
 
 data class EffectRecord(

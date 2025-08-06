@@ -149,17 +149,19 @@ class AreaParser(
     private fun parseAreaSpecialSection(reader: AreaFileReader): AreaSpecial {
         val flags = mutableSetOf<AreaSpecial.AreaFlag>()
         var experienceModifier: Int? = null
+        var resetMessage: String? = null
         var loop = true
 
         while (loop) {
             when (val word = reader.readWord()) {
                 Markup.AREA_SPECIAL_END_OF_SECTION -> loop = false
                 Markup.AREA_SPECIAL_EXPERIENCE_MODIFIER_TAG -> experienceModifier = reader.readNumber()
+                Markup.AREA_SPECIAL_RESET_MESSAGE_TAG -> resetMessage = reader.readString()
                 else -> flags.add(AreaSpecial.AreaFlag.fromTag(word))
             }
         }
 
-        return AreaSpecial(flags = flags, experienceModifier = experienceModifier)
+        return AreaSpecial(flags = flags, experienceModifier = experienceModifier, resetMessage = resetMessage)
     }
 
     private fun parseRecallSection(reader: AreaFileReader): Recall {
@@ -342,6 +344,7 @@ class AreaParser(
 
             val extraDescriptions = mutableListOf<Item.ExtraDescription>()
             val effects = mutableListOf<Item.Effect>()
+            var maxInstances: Int? = null
             var loop = true
 
             while (loop) {
@@ -365,6 +368,11 @@ class AreaParser(
                                         modifier = reader.readNumber(),
                                 ),
                         )
+                    }
+
+                    Markup.OBJECT_MAX_INSTANCES_DELIMITER -> {
+                        reader.readChar()
+                        maxInstances = reader.readNumber()
                     }
 
                     null -> throw ParseError("End of file")
@@ -392,6 +400,7 @@ class AreaParser(
                     trap = trap,
                     ego = ego,
                     typeProperties = typeProperties,
+                    maxInstances = maxInstances,
             )
 
             debug("${sourceFile.id}: $item")

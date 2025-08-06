@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 data class AreaSpecial(
         val flags: Set<AreaFlag>,
         val experienceModifier: Int?,
+        val resetMessage: String?,
 ) {
     enum class AreaFlag(
             @JsonValue val tag: String,

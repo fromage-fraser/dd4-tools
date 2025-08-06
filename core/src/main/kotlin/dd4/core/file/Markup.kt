@@ -7,6 +7,7 @@ object Markup {
     const val VNUM_DELIMITER = '#'
 
     const val AREA_SPECIAL_EXPERIENCE_MODIFIER_TAG = "exp_mod"
+    const val AREA_SPECIAL_RESET_MESSAGE_TAG = "reset_msg"
     const val AREA_SPECIAL_END_OF_SECTION = "$"
 
     const val MOBILE_MOB_PROG_START_DELIMITER = '>'
@@ -20,6 +21,7 @@ object Markup {
 
     const val OBJECT_EXTRA_DESCRIPTION_DELIMITER = 'E'
     const val OBJECT_EFFECT_DELIMITER = 'A'
+    const val OBJECT_MAX_INSTANCES_DELIMITER = 'M'
 
     const val OBJECT_SET_EFFECT_DELIMITER = 'A'
 
