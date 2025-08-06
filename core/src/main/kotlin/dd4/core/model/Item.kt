@@ -21,6 +21,7 @@ data class Item(
         val trap: Trap?,
         val ego: Ego?,
         val typeProperties: TypeProperties,
+        val maxInstances: Int?,
 ) {
     enum class Type(
             @JsonValue val tag: String,
@@ -31,6 +32,8 @@ data class Item(
         WAND("wand", 3),
         STAFF("staff", 4),
         WEAPON("weapon", 5),
+        DIGGER("digger", 6),
+        HOARD("hoard", 7),
         TREASURE("treasure", 8),
         ARMOUR("armour", 9),
         POTION("potion", 10),

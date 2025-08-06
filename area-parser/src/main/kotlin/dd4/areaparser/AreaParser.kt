@@ -344,6 +344,7 @@ class AreaParser(
 
             val extraDescriptions = mutableListOf<Item.ExtraDescription>()
             val effects = mutableListOf<Item.Effect>()
+            var maxInstances: Int? = null
             var loop = true
 
             while (loop) {
@@ -367,6 +368,11 @@ class AreaParser(
                                         modifier = reader.readNumber(),
                                 ),
                         )
+                    }
+
+                    Markup.OBJECT_MAX_INSTANCES_DELIMITER -> {
+                        reader.readChar()
+                        maxInstances = reader.readNumber()
                     }
 
                     null -> throw ParseError("End of file")
@@ -394,6 +400,7 @@ class AreaParser(
                     trap = trap,
                     ego = ego,
                     typeProperties = typeProperties,
+                    maxInstances = maxInstances,
             )
 
             debug("${sourceFile.id}: $item")

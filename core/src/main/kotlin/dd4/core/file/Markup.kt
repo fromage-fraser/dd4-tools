@@ -21,6 +21,7 @@ object Markup {
 
     const val OBJECT_EXTRA_DESCRIPTION_DELIMITER = 'E'
     const val OBJECT_EFFECT_DELIMITER = 'A'
+    const val OBJECT_MAX_INSTANCES_DELIMITER = 'M'
 
     const val OBJECT_SET_EFFECT_DELIMITER = 'A'
 

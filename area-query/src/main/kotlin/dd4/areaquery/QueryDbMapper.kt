@@ -121,6 +121,7 @@ class QueryDbMapper {
                             currentCharges = item.typeProperties.currentCharges,
                             maxCharges = item.typeProperties.maxCharges,
                             containerCapacity = item.typeProperties.containerCapacity,
+                            maxInstances = item.maxInstances,
                     )
                 }
 
