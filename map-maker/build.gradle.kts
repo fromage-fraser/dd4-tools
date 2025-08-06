@@ -1,12 +1,10 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm")
     application
 }
 
 application {
-    mainClassName = "dd4.mapmaker.MapMakerMainKt"
+    mainClass.set("dd4.mapmaker.MapMakerMainKt")
 }
 
 dependencies {
@@ -19,11 +17,8 @@ dependencies {
     implementation(Libs.freemarker)
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = Versions.kotlin_jvm_target
-        apiVersion = Versions.kotlin_api
-    }
+kotlin {
+    jvmToolchain(21)
 }
 
 val jar by tasks.getting(Jar::class) {

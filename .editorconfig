@@ -16,7 +16,10 @@ ij_kotlin_allow_trailing_comma_on_call_site = true
 ij_kotlin_else_on_new_line = true
 ij_kotlin_catch_on_new_line = true
 ij_kotlin_finally_on_new_line = true
-ij_kotlin_name_count_to_use_star_import = 100
+ij_kotlin_name_count_to_use_star_import = 999
+ij_kotlin_name_count_to_use_star_import_for_members = 999
+ij_kotlin_imports_layout_no_wildcards = true
+ktlint_code_style = intellij_idea
 
 [{*.json,*.yml,*.yaml}]
 indent_size = 2
