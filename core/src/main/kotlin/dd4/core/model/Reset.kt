@@ -3,17 +3,14 @@ package dd4.core.model
 import com.fasterxml.jackson.annotation.JsonValue
 
 data class Reset(
-        val type: Type,
-        val arg0: Int,
-        val arg1: Int,
-        val arg2: Int,
-        val arg3: Int,
-        val comment: String,
+    val type: Type,
+    val arg0: Int,
+    val arg1: Int,
+    val arg2: Int,
+    val arg3: Int,
+    val comment: String,
 ) {
-    enum class Type(
-            @JsonValue val tag: String,
-            val id: Char,
-    ) {
+    enum class Type(@JsonValue val tag: String, val id: Char) {
         // Values: - <mobile vnum> <max count> <room vnum>
         MOBILE_TO_ROOM("mobile_to_room", 'M'),
 
@@ -38,22 +35,19 @@ data class Reset(
         // Values: - <room vnum> <max direction number: 4 -> NSEW, 6 -> NSEWUD> -
         RANDOMIZE_EXITS("randomize_exits", 'R'),
 
-        UNKNOWN_F("unknown_f", 'F');
+        UNKNOWN_F("unknown_f", 'F'),
+        ;
 
         companion object {
-            fun fromId(value: Char) =
-                    try {
-                        values().first { it.id == value }
-                    }
-                    catch (e: NoSuchElementException) {
-                        throw IllegalArgumentException("Invalid reset type ID: $value")
-                    }
+            fun fromId(value: Char) = try {
+                entries.first { it.id == value }
+            } catch (_: NoSuchElementException) {
+                throw IllegalArgumentException("Invalid reset type ID: $value")
+            }
         }
     }
 
-    override fun toString(): String {
-        return "Reset(${type.tag} $arg0 $arg1 $arg2 $arg3" +
-                (if (comment.isNotBlank()) " '$comment'" else "") +
-                ")"
-    }
+    override fun toString(): String = "Reset(${type.tag} $arg0 $arg1 $arg2 $arg3" +
+        (if (comment.isNotBlank()) " '$comment'" else "") +
+        ")"
 }

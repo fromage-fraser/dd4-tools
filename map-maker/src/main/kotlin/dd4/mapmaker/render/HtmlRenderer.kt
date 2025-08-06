@@ -23,14 +23,18 @@ class HtmlRenderer {
 
     fun fileNameFor(areaId: String): String = "$areaId.html"
 
-    fun renderAreaMap(areaMap: AreaMap, outputFileDir: String, options: RenderOptions = RenderOptions()) {
+    fun renderAreaMap(
+        areaMap: AreaMap,
+        outputFileDir: String,
+        options: RenderOptions = RenderOptions(),
+    ) {
         val template = templateConfig.getTemplate("single-area-map.ftl")
         val fileWriter = FileWriter(Paths.get(outputFileDir, fileNameFor(areaMap.id)).toFile())
         val model = mapOf(
-                "areaMap" to areaMap,
-                "options" to options,
-                "indexLink" to indexFileName(),
-                "buildInfo" to buildInfo(),
+            "areaMap" to areaMap,
+            "options" to options,
+            "indexLink" to indexFileName(),
+            "buildInfo" to buildInfo(),
         )
         template.process(model, fileWriter)
     }
@@ -41,16 +45,16 @@ class HtmlRenderer {
 
         val indexItems = areaMaps.map {
             MapIndexItem(
-                    name = it.name(),
-                    author = it.author(),
-                    levelDescription = it.levelDescription() ?: "Unknown level",
-                    link = fileNameFor(it.id),
+                name = it.name(),
+                author = it.author(),
+                levelDescription = it.levelDescription() ?: "Unknown level",
+                link = fileNameFor(it.id),
             )
         }.sortedWith(compareBy { it.name.lowercase().removePrefix("the ") })
 
         val model = mapOf(
-                "items" to indexItems,
-                "buildInfo" to buildInfo(),
+            "items" to indexItems,
+            "buildInfo" to buildInfo(),
         )
         template.process(model, fileWriter)
     }

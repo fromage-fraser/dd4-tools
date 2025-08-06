@@ -3,10 +3,7 @@ package dd4.mapmaker.model
 import dd4.core.model.Area
 import dd4.core.model.Room
 
-class AreaMap(
-        val id: String,
-        val area: Area,
-) {
+class AreaMap(val id: String, val area: Area) {
     val fragments: MutableList<Fragment> = mutableListOf()
 
     private var fragmentCount = 0
@@ -21,20 +18,17 @@ class AreaMap(
     fun findFragmentWithRoom(room: Room): Fragment? = fragments.firstOrNull { it.hasRoom(room) }
 
     fun findCellForRoom(room: Room): RoomCell? =
-            fragments.map { it.findCellForRoom(room) }
-                    .filterNotNull()
-                    .firstOrNull()
+        fragments.firstNotNullOfOrNull { it.findCellForRoom(room) }
 
     fun name() = area.name
 
     fun author() = area.author
 
-    fun levelDescription() =
-            when {
-                area.lowLevel == Area.LEVEL_ALL -> "All levels"
-                area.isClanHeadquarters() -> "Clan headquarters"
-                area.lowLevel > 0 && area.highLevel == area.lowLevel -> "Level ${area.lowLevel}"
-                area.lowLevel > 0 && area.highLevel > 0 -> "Levels ${area.lowLevel}-${area.highLevel}"
-                else -> null
-            }
+    fun levelDescription() = when {
+        area.lowLevel == Area.LEVEL_ALL -> "All levels"
+        area.isClanHeadquarters() -> "Clan headquarters"
+        area.lowLevel > 0 && area.highLevel == area.lowLevel -> "Level ${area.lowLevel}"
+        area.lowLevel > 0 && area.highLevel > 0 -> "Levels ${area.lowLevel}-${area.highLevel}"
+        else -> null
+    }
 }

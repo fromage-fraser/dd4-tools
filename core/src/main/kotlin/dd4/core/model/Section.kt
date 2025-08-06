@@ -2,9 +2,7 @@ package dd4.core.model
 
 import com.fasterxml.jackson.annotation.JsonValue
 
-enum class Section(
-        @JsonValue val tag: String,
-) {
+enum class Section(@JsonValue val tag: String) {
     AREA("AREA"),
     AREA_SPECIAL("AREA_SPECIAL"),
     MOBILES("MOBILES"),
@@ -18,9 +16,10 @@ enum class Section(
     HELPS("HELPS"),
     RECALL("RECALL"),
     GAMES("GAMES"),
-    END_OF_FILE("$");
+    END_OF_FILE("$"),
+    ;
 
     companion object {
-        fun fromTag(value: String) = values().first { it.tag == value }
+        fun fromTag(value: String) = entries.first { it.tag == value }
     }
 }

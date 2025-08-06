@@ -18,22 +18,25 @@ import dd4.mapmaker.model.RoomCell
 import dd4.mapmaker.model.UnlinkedExit
 import dd4.mapmaker.render.HtmlRenderer
 import dd4.mapmaker.render.RenderOptions
-import java.util.*
+import java.util.Deque
+import java.util.LinkedList
+import java.util.Queue
 
 class SingleAreaMapGenerator(
-        private val sourceFile: SourceFile,
-        private val roomVnumLookup: Map<Int, RoomAndArea>,
-        private val renderer: HtmlRenderer,
-        private val outputDirPath: String,
-        private val verbose: Boolean = false,
-        private val progressiveRender: Boolean = false,
-        private val mapDebug: Boolean = false,
+    private val sourceFile: SourceFile,
+    private val roomVnumLookup: Map<Int, RoomAndArea>,
+    private val renderer: HtmlRenderer,
+    private val outputDirPath: String,
+    private val verbose: Boolean = false,
+    private val progressiveRender: Boolean = false,
+    private val mapDebug: Boolean = false,
 ) {
     companion object {
-        const val maxRoomLinkingCount = 10_000
+        const val MAX_ROOM_LINKING_COUNT = 10_000
     }
 
-    private val area = sourceFile.area ?: throw IllegalArgumentException("Area file must provide area")
+    private val area =
+        sourceFile.area ?: throw IllegalArgumentException("Area file must provide area")
     private val areaMap = AreaMap(sourceFile.id, area)
     private val unlinkedRooms: Deque<RoomAndLabel> = buildUnlinkedRooms()
     private val unlinkedExits = mutableSetOf<UnlinkedExit>()
@@ -67,34 +70,34 @@ class SingleAreaMapGenerator(
 
     private fun doRender() {
         val renderOptions = RenderOptions(
-                renderVnums = mapDebug,
-                renderLinkedExitSymbols = mapDebug,
-                renderPositions = mapDebug,
+            renderVnums = mapDebug,
+            renderLinkedExitSymbols = mapDebug,
+            renderPositions = mapDebug,
         )
         renderer.renderAreaMap(areaMap, outputDirPath, renderOptions)
     }
 
-    private fun buildUnlinkedRooms(): Deque<RoomAndLabel> =
-            LinkedList(
-                    sourceFile.rooms
-                            // Reorder rooms so that indoor rooms are processed last: this generates better maps for cities
-                            .sortedWith { a, b ->
-                                val aIsInside = a.sectorType === Room.SectorType.INSIDE
-                                val bIsInside = b.sectorType === Room.SectorType.INSIDE
-                                when {
-                                    aIsInside && !bIsInside -> 1
-                                    !aIsInside && bIsInside -> -1
-                                    else -> 0
-                                }
-                            }
-                            .map { RoomAndLabel(it) },
-            )
+    private fun buildUnlinkedRooms(): Deque<RoomAndLabel> = LinkedList(
+        sourceFile.rooms
+            // Reorder rooms so that indoor rooms are processed last: this generates better maps for cities
+            .sortedWith { a, b ->
+                val aIsInside = a.sectorType === Room.SectorType.INSIDE
+                val bIsInside = b.sectorType === Room.SectorType.INSIDE
+                when {
+                    aIsInside && !bIsInside -> 1
+                    !aIsInside && bIsInside -> -1
+                    else -> 0
+                }
+            }
+            .map { RoomAndLabel(it) },
+    )
 
     private fun processUnlinkedRooms() {
         var count = 0
         while (unlinkedRooms.isNotEmpty()) {
-            if (++count > maxRoomLinkingCount)
+            if (++count > MAX_ROOM_LINKING_COUNT) {
                 throw MapGenerationError("Giving up: failed to place rooms")
+            }
 
             val roomAndLabel = unlinkedRooms.removeFirst()
             val room = roomAndLabel.room
@@ -108,7 +111,10 @@ class SingleAreaMapGenerator(
             var roomLinked = processUnlinkedRoomUsingExits(room, roomLabel, roomCellFlags)
 
             // Does any placed room link to me?
-            if (!roomLinked) roomLinked = processUnlinkedRoomUsingReverseExits(room, roomLabel, roomCellFlags)
+            if (!roomLinked) {
+                roomLinked =
+                    processUnlinkedRoomUsingReverseExits(room, roomLabel, roomCellFlags)
+            }
 
             // Create a new fragment if we're still not placed
             if (!roomLinked) {
@@ -117,7 +123,7 @@ class SingleAreaMapGenerator(
                 val cell = RoomCell(Position.ORIGIN, room, roomCellFlags)
                 fragment.addCell(cell)
 
-                for (direction in Direction.values()) {
+                for (direction in Direction.entries) {
                     val exit = room.exit(direction)
                     if (exit == null) cell.setNoLink(direction) else cell.setUnlinked(direction)
                 }
@@ -134,9 +140,9 @@ class SingleAreaMapGenerator(
     }
 
     private fun processUnlinkedRoomUsingExits(
-            room: Room,
-            roomLabel: String?,
-            roomCellFlags: Set<RoomCell.Flag>,
+        room: Room,
+        roomLabel: String?,
+        roomCellFlags: Set<RoomCell.Flag>,
     ): Boolean {
         var roomLinked = false
 
@@ -159,7 +165,8 @@ class SingleAreaMapGenerator(
             val forceJump = hints.any { it.type == ExitHint.Type.FORCE_JUMP }
 
             if (forceJump) {
-                val unlinkedExit = addUnlinkedExit(exit, room, targetRoomAndArea.room, forceJump = true)
+                val unlinkedExit =
+                    addUnlinkedExit(exit, room, targetRoomAndArea.room, forceJump = true)
                 debug("Found 'force jump' hint for exit: $unlinkedExit")
                 continue@exit
             }
@@ -179,7 +186,7 @@ class SingleAreaMapGenerator(
             if (targetFragment != null) {
                 // Target room exists in a fragment: attempt to link to it in that fragment
                 val destinationCell = targetFragment.findCellForRoom(targetRoom)
-                        ?: throw MapGenerationError("Expected cell for $room in $targetFragment")
+                    ?: throw MapGenerationError("Expected cell for $room in $targetFragment")
 
                 // Vertical exits: rely on the unlinked exit processor to create a jump
                 if (direction.isVertical()) {
@@ -189,11 +196,14 @@ class SingleAreaMapGenerator(
                 }
 
                 roomLinked = addRoomToFragment(
-                        room, roomLabel, roomCellFlags, targetFragment, destinationCell,
-                        direction,
+                    room,
+                    roomLabel,
+                    roomCellFlags,
+                    targetFragment,
+                    destinationCell,
+                    direction,
                 ) != null
-            }
-            else {
+            } else {
                 // Target room does not yet exist in a fragment: keep track of an unlinked exit
                 val unlinkedExit = addUnlinkedExit(exit, room, targetRoomAndArea.room)
                 debug("Adding unlinked exit to unlinked room: $unlinkedExit")
@@ -205,9 +215,9 @@ class SingleAreaMapGenerator(
     }
 
     private fun processUnlinkedRoomUsingReverseExits(
-            room: Room,
-            roomLabel: String?,
-            roomCellFlags: Set<RoomCell.Flag>,
+        room: Room,
+        roomLabel: String?,
+        roomCellFlags: Set<RoomCell.Flag>,
     ): Boolean {
         var roomLinked = false
         val candidateExits = unlinkedExits.union(fragmentAnchors).filter { it.targetRoom == room }
@@ -217,11 +227,17 @@ class SingleAreaMapGenerator(
             if (candidateExit.forceJump) continue@candidate
             val directionToCandidate = candidateExit.exit.direction.reverse()
             val candidateRoom = candidateExit.exitRoom
-            val candidateFragment = areaMap.findFragmentWithRoom(candidateRoom) ?: continue@candidate
-            val candidateCell = candidateFragment.findCellForRoom(candidateRoom) ?: continue@candidate
+            val candidateFragment =
+                areaMap.findFragmentWithRoom(candidateRoom) ?: continue@candidate
+            val candidateCell =
+                candidateFragment.findCellForRoom(candidateRoom) ?: continue@candidate
             val addedCell = addRoomToFragment(
-                    room, roomLabel, roomCellFlags, candidateFragment, candidateCell,
-                    directionToCandidate,
+                room,
+                roomLabel,
+                roomCellFlags,
+                candidateFragment,
+                candidateCell,
+                directionToCandidate,
             )
 
             if (addedCell != null) {
@@ -238,29 +254,34 @@ class SingleAreaMapGenerator(
     }
 
     private fun processUnlinkedExits(
-            createJumpsForUnlinkableExits: Boolean = false,
-            mergeFragments: Boolean = false,
+        createJumpsForUnlinkableExits: Boolean = false,
+        mergeFragments: Boolean = false,
     ) {
         for (unlinkedExit in unlinkedExits.toList()) {
-            val linked = processUnlinkedExit(unlinkedExit, createJumpsForUnlinkableExits, mergeFragments)
+            val linked =
+                processUnlinkedExit(unlinkedExit, createJumpsForUnlinkableExits, mergeFragments)
             if (linked) unlinkedExits.remove(unlinkedExit)
         }
     }
 
     private fun processUnlinkedExit(
-            unlinkedExit: UnlinkedExit,
-            createJumpsForUnlinkableExits: Boolean,
-            mergeFragments: Boolean,
-    ): Boolean =
-            if (unlinkedExit.exit.direction.isVertical())
-                processUnlinkedVerticalExit(unlinkedExit)
-            else
-                processUnlinkedHorizontalExit(unlinkedExit, createJumpsForUnlinkableExits, mergeFragments)
+        unlinkedExit: UnlinkedExit,
+        createJumpsForUnlinkableExits: Boolean,
+        mergeFragments: Boolean,
+    ): Boolean = if (unlinkedExit.exit.direction.isVertical()) {
+        processUnlinkedVerticalExit(unlinkedExit)
+    } else {
+        processUnlinkedHorizontalExit(
+            unlinkedExit,
+            createJumpsForUnlinkableExits,
+            mergeFragments,
+        )
+    }
 
     private fun processUnlinkedHorizontalExit(
-            unlinkedExit: UnlinkedExit,
-            createJumpsForUnlinkableExits: Boolean,
-            mergeFragments: Boolean,
+        unlinkedExit: UnlinkedExit,
+        createJumpsForUnlinkableExits: Boolean,
+        mergeFragments: Boolean,
     ): Boolean {
         if (unlinkedExit.forceJump && !createJumpsForUnlinkableExits) return false
         val exitDirection = unlinkedExit.exit.direction
@@ -280,7 +301,7 @@ class SingleAreaMapGenerator(
 
         if (targetFragment == sourceFragment) {
             val sourceCell = sourceFragment.findCellForRoom(unlinkedExit.exitRoom)
-                    ?: throw MapGenerationError("Unable to find cell for room ${unlinkedExit.exitRoom}")
+                ?: throw MapGenerationError("Unable to find cell for room ${unlinkedExit.exitRoom}")
 
             // We might already be linked...
             if (sourceCell.isLinkedOrHasJump(exitDirection)) {
@@ -347,7 +368,12 @@ class SingleAreaMapGenerator(
 
         // We can't merge fragments if the exit and target rooms have incompatible exits (e.g. exit leads north to
         // target and target leads south to a third room)
-        if (!roomFragmentsCanBeMerged(unlinkedExit.exitRoom, exitDirection, unlinkedExit.targetRoom)) {
+        if (!roomFragmentsCanBeMerged(
+                unlinkedExit.exitRoom,
+                exitDirection,
+                unlinkedExit.targetRoom,
+            )
+        ) {
             debug("Won't merge fragments with incompatible exits")
             return false
         }
@@ -357,21 +383,27 @@ class SingleAreaMapGenerator(
         // An ASSumption we're making: All rooms in a fragment are connected somehow, so we can move them all.
         // We add them back into the queue in an order that makes re-linking easier.
         val fragmentToMerge =
-                if (targetFragment.cellCount >= sourceFragment.cellCount) sourceFragment else targetFragment
+            if (targetFragment.cellCount >=
+                sourceFragment.cellCount
+            ) {
+                sourceFragment
+            } else {
+                targetFragment
+            }
         debug("Returning rooms in $fragmentToMerge to linking queue")
 
         // This adds back the rooms in reverse order, which tends to improve how successfully we place them.
         // We could probably re-order them by distance from the linking point in the other fragment to make
         // linking more efficient.
         fragmentToMerge.cells()
-                .filterIsInstance<RoomCell>()
-                .forEach { roomCell ->
-                    unlinkedRooms.addFirst(roomCell.toRoomAndLabel())
-                    // Forgot about any unlinked exits
-                    unlinkedExits.removeAll { unlinkedExit ->
-                        unlinkedExit.exitRoom.vnum == roomCell.room.vnum
-                    }
+            .filterIsInstance<RoomCell>()
+            .forEach { roomCell ->
+                unlinkedRooms.addFirst(roomCell.toRoomAndLabel())
+                // Forgot about any unlinked exits
+                unlinkedExits.removeAll { unlinkedExit ->
+                    unlinkedExit.exitRoom.vnum == roomCell.room.vnum
                 }
+            }
         areaMap.fragments.remove(fragmentToMerge)
 
         // "Fragment anchors" allow certain rooms to be able to find their anchor points again (quite hacky...)
@@ -400,10 +432,16 @@ class SingleAreaMapGenerator(
         return createJumpToRoomCell(exitRoomCell, targetRoomCell, unlinkedExit.exit.direction)
     }
 
-    private fun createJumpToRoomCell(exitCell: Cell, targetRoomCell: RoomCell, direction: Direction): Boolean {
+    private fun createJumpToRoomCell(
+        exitCell: Cell,
+        targetRoomCell: RoomCell,
+        direction: Direction,
+    ): Boolean {
         if (targetRoomCell.label == null) targetRoomCell.label = labeller.nextLabel()
-        val label = targetRoomCell.label ?: throw MapGenerationError("Couldn't generate label for $targetRoomCell")
-        val description = "${direction.description.upperCaseFirst()} to $label (${targetRoomCell.room.cleanName})"
+        val label = targetRoomCell.label
+            ?: throw MapGenerationError("Couldn't generate label for $targetRoomCell")
+        val description =
+            "${direction.description.upperCaseFirst()} to $label (${targetRoomCell.room.cleanName})"
         exitCell.setJump(direction, label, description)
 
         debug("Created jump from $exitCell to $targetRoomCell with label $label")
@@ -413,34 +451,50 @@ class SingleAreaMapGenerator(
     private fun roomCellFlagsFor(room: Room, sourceFile: SourceFile): Set<RoomCell.Flag> {
         val flags = mutableSetOf<RoomCell.Flag>()
 
-        if (sourceFile.roomHasRandomizedExits(room))
+        if (sourceFile.roomHasRandomizedExits(room)) {
             flags.add(RoomCell.Flag.RANDOMIZED_EXITS)
+        }
 
-        if (room.isFlagged(Room.Flag.NO_MOB))
+        if (room.isFlagged(Room.Flag.NO_MOB)) {
             flags.add(RoomCell.Flag.NO_MOBILES)
+        }
 
-        if (room.isFlagged(Room.Flag.NO_RECALL))
+        if (room.isFlagged(Room.Flag.NO_RECALL)) {
             flags.add(RoomCell.Flag.NO_RECALL)
+        }
 
-        if (sourceFile.roomHasMobileWithSpecialFunction(room, SpecialFunction.SPECIAL_FUNCTION_ADEPT))
+        if (sourceFile.roomHasMobileWithSpecialFunction(
+                room,
+                SpecialFunction.SPECIAL_FUNCTION_ADEPT,
+            )
+        ) {
             flags.add(RoomCell.Flag.HEALER)
+        }
 
-        if (sourceFile.roomHasShop(room))
+        if (sourceFile.roomHasShop(room)) {
             flags.add(RoomCell.Flag.SHOP)
+        }
 
-        if (sourceFile.roomHasTeacher(room))
+        if (sourceFile.roomHasTeacher(room)) {
             flags.add(RoomCell.Flag.TEACHER)
+        }
 
         return flags
     }
 
     private fun addAreaExit(exit: Exit, exitRoom: Room, targetRoomAndArea: RoomAndArea): AreaExit {
-        val areaExit = AreaExit(exitRoom, exit, targetRoomAndArea.area, targetRoomAndArea.sourceFile)
+        val areaExit =
+            AreaExit(exitRoom, exit, targetRoomAndArea.area, targetRoomAndArea.sourceFile)
         areaExits.add(areaExit)
         return areaExit
     }
 
-    private fun addUnlinkedExit(exit: Exit, exitRoom: Room, targetRoom: Room, forceJump: Boolean = false): UnlinkedExit {
+    private fun addUnlinkedExit(
+        exit: Exit,
+        exitRoom: Room,
+        targetRoom: Room,
+        forceJump: Boolean = false,
+    ): UnlinkedExit {
         val unlinkedExit = UnlinkedExit(exit, exitRoom, targetRoom, forceJump)
         unlinkedExits.add(unlinkedExit)
         return unlinkedExit
@@ -451,12 +505,12 @@ class SingleAreaMapGenerator(
     }
 
     private fun addRoomToFragment(
-            room: Room,
-            roomLabel: String?,
-            roomCellFlags: Set<RoomCell.Flag>,
-            fragment: Fragment,
-            destinationCell: Cell,
-            directionToDestinationCell: Direction,
+        room: Room,
+        roomLabel: String?,
+        roomCellFlags: Set<RoomCell.Flag>,
+        fragment: Fragment,
+        destinationCell: Cell,
+        directionToDestinationCell: Direction,
     ): RoomCell? {
         val destinationPosition = destinationCell.position
         val reverseDirection = directionToDestinationCell.reverse()
@@ -470,13 +524,11 @@ class SingleAreaMapGenerator(
 
                 if (shiftCells(fragment, targetPosition, reverseDirection)) {
                     debug("Shift successful")
-                }
-                else {
+                } else {
                     debug("Unable to shift cells")
                     return null
                 }
-            }
-            else {
+            } else {
                 debug("Target position is occupied by $existingCell and shift is not possible")
                 return null
             }
@@ -486,44 +538,38 @@ class SingleAreaMapGenerator(
         // Note: the destination room cell may lead to us, but we don't necessarily lead back to it.
         val destinationCellRoom = if (destinationCell is RoomCell) destinationCell.room else null
 
-        for (direction in Direction.values()) {
+        for (direction in Direction.entries) {
             val exit = room.exit(direction)
 
             if (exit == null) {
                 cell.setNoLink(direction)
-            }
-            else if (direction == directionToDestinationCell) {
+            } else if (direction == directionToDestinationCell) {
                 val targetRoom = sourceFile.findRoomByVnum(exit.destinationVnum)
 
                 if (exit.hasDestinationRoom() && targetRoom == null) {
-                    //TODO: Need to support area exits?
+                    // TODO: Need to support area exits?
                     throw MapGenerationError("Target room not found in area: $room $exit")
                 }
 
                 if (destinationCellRoom == null) {
                     cell.setUnlinked(direction)
-                }
-                else if (direction.isVertical()) {
+                } else if (direction.isVertical()) {
                     cell.setUnlinked(direction)
-                }
-                else if (targetRoom == null) {
+                } else if (targetRoom == null) {
                     // Probably wrong...
                     cell.setNoLink(direction)
-                }
-                else if (destinationCellRoom == targetRoom) {
+                } else if (destinationCellRoom == targetRoom) {
                     // We lead to the destination room
                     cell.setLinked(direction)
                     if (room.hasReturnExitTo(destinationCellRoom, direction)) {
                         // And the destination room links back to us
                         destinationCell.setLinked(direction.reverse())
                     }
-                }
-                else {
+                } else {
                     addUnlinkedExit(exit, room, targetRoom)
                     cell.setUnlinked(direction)
                 }
-            }
-            else {
+            } else {
                 cell.setUnlinked(direction)
             }
         }
@@ -533,30 +579,42 @@ class SingleAreaMapGenerator(
         return cell
     }
 
-    private fun canShiftCellsFrom(fragment: Fragment, targetPosition: Position, shiftDirection: Direction): Boolean {
+    private fun canShiftCellsFrom(
+        fragment: Fragment,
+        targetPosition: Position,
+        shiftDirection: Direction,
+    ): Boolean {
         val targetCell = fragment.cell(targetPosition) ?: return false
         if (targetCell.isLinked(shiftDirection.reverse())) return false
-        val neighbourCell = fragment.cell(targetPosition.neighbour(shiftDirection.reverse())) ?: return true
+        val neighbourCell =
+            fragment.cell(targetPosition.neighbour(shiftDirection.reverse())) ?: return true
         if (neighbourCell.isLinked(shiftDirection)) return false
         return true
     }
 
-    private fun shiftCells(fragment: Fragment, targetPosition: Position, shiftDirection: Direction): Boolean {
+    private fun shiftCells(
+        fragment: Fragment,
+        targetPosition: Position,
+        shiftDirection: Direction,
+    ): Boolean {
         val cellsToShift = mutableSetOf<Cell>()
 
         // Find all the cells in front of us that can be shifted, plus those that are behind our boundary and need
         // to be separately checked to see if they can be shifted too (preventing them from being "left behind")
         val (shiftableCells, cellsBehindBoundary) =
-                findShiftableCellsFromBoundaryForward(fragment, targetPosition, shiftDirection)
+            findShiftableCellsFromBoundaryForward(fragment, targetPosition, shiftDirection)
         cellsToShift.addAll(shiftableCells)
 
         // Attempt to move blocks behind the boundary
         for (cell in cellsBehindBoundary) {
             cellsToShift.addAll(
-                    findShiftableCellsBehindBoundary(
-                            fragment, cell, targetPosition, shiftDirection,
-                            cellsToShift,
-                    ),
+                findShiftableCellsBehindBoundary(
+                    fragment,
+                    cell,
+                    targetPosition,
+                    shiftDirection,
+                    cellsToShift,
+                ),
             )
         }
 
@@ -579,8 +637,8 @@ class SingleAreaMapGenerator(
 
             fragment.cell(toPosition)?.let {
                 throw MapGenerationError(
-                        "Expected position $toPosition to be empty when shifting $cell " +
-                                "$shiftDirection (found $it)",
+                    "Expected position $toPosition to be empty when shifting $cell " +
+                        "$shiftDirection (found $it)",
                 )
             }
 
@@ -588,24 +646,29 @@ class SingleAreaMapGenerator(
             var connectCells = false
 
             // We're not at a N/S boundary, so no new connectors required
-            if ((shiftDirection == Direction.NORTH || shiftDirection == Direction.SOUTH)
-                    && fromPosition.y != targetPosition.y) {
+            if ((shiftDirection == Direction.NORTH || shiftDirection == Direction.SOUTH) &&
+                fromPosition.y != targetPosition.y
+            ) {
                 connectCells = false
             }
             // We're not at an E/W boundary, so no new connectors required
-            else if ((shiftDirection == Direction.EAST || shiftDirection == Direction.WEST)
-                    && fromPosition.x != targetPosition.x) {
+            else if ((shiftDirection == Direction.EAST || shiftDirection == Direction.WEST) &&
+                fromPosition.x != targetPosition.x
+            ) {
                 connectCells = false
             }
             // There is a cell behind the boundary that will move up to occupy this space
-            else if (cellsToShift.any { it.position == fromPosition.neighbour(shiftDirection.reverse()) }) {
+            else if (cellsToShift.any {
+                    it.position ==
+                        fromPosition.neighbour(shiftDirection.reverse())
+                }
+            ) {
                 connectCells = false
             }
             // Our cell is linked to the neighbour it will be shifted away from
             else if (cell.isLinked(shiftDirection.reverse())) {
                 connectCells = true
-            }
-            else {
+            } else {
                 val neighbourCell = fragment.cell(fromPosition.neighbour(shiftDirection.reverse()))
                 // The neighbour we are shifting away from is linked to us
                 if (neighbourCell != null && neighbourCell.isLinked(shiftDirection)) {
@@ -621,9 +684,9 @@ class SingleAreaMapGenerator(
     }
 
     private fun findShiftableCellsFromBoundaryForward(
-            fragment: Fragment,
-            targetPosition: Position,
-            shiftDirection: Direction,
+        fragment: Fragment,
+        targetPosition: Position,
+        shiftDirection: Direction,
     ): Pair<Set<Cell>, Set<Cell>> {
         val boundaryX = targetPosition.x
         val boundaryY = targetPosition.y
@@ -662,9 +725,10 @@ class SingleAreaMapGenerator(
                     continue@direction
                 }
 
-                if (direction == shiftDirection
-                        || cell.isLinked(direction)
-                        || neighbourCell.isLinked(direction.reverse())) {
+                if (direction == shiftDirection ||
+                    cell.isLinked(direction) ||
+                    neighbourCell.isLinked(direction.reverse())
+                ) {
                     searchQueue.add(neighbourCell)
                 }
             }
@@ -674,11 +738,11 @@ class SingleAreaMapGenerator(
     }
 
     private fun findShiftableCellsBehindBoundary(
-            fragment: Fragment,
-            rootCell: Cell,
-            targetPosition: Position,
-            shiftDirection: Direction,
-            cellsBeyondBoundaryBeingShifted: Set<Cell>,
+        fragment: Fragment,
+        rootCell: Cell,
+        targetPosition: Position,
+        shiftDirection: Direction,
+        cellsBeyondBoundaryBeingShifted: Set<Cell>,
     ): Set<Cell> {
         val cellsSeen = mutableSetOf<Cell>()
         val cellsToShift = mutableSetOf<Cell>()
@@ -696,9 +760,11 @@ class SingleAreaMapGenerator(
             direction@ for (direction in Direction.HORIZONTAL_DIRECTIONS) {
                 // If we're the root cell, don't want to include anything already being shifted
                 if (cell == rootCell && direction == shiftDirection) continue@direction
-                val neighbourCell = fragment.findCellNeighbour(cell, direction) ?: continue@direction
-                if (cell.isLinked(direction) || neighbourCell.isLinked(direction.reverse()))
+                val neighbourCell =
+                    fragment.findCellNeighbour(cell, direction) ?: continue@direction
+                if (cell.isLinked(direction) || neighbourCell.isLinked(direction.reverse())) {
                     searchQueue.add(neighbourCell)
+                }
             }
         }
 
@@ -725,7 +791,11 @@ class SingleAreaMapGenerator(
         return cellsToShift
     }
 
-    private fun roomFragmentsCanBeMerged(fromRoom: Room, direction: Direction, toRoom: Room): Boolean {
+    private fun roomFragmentsCanBeMerged(
+        fromRoom: Room,
+        direction: Direction,
+        toRoom: Room,
+    ): Boolean {
         val fromRoomHasExit = fromRoom.hasExit(direction)
         val toRoomHasExit = toRoom.hasExit(direction.reverse())
         val fromRoomIsLinked = fromRoom.exit(direction)?.destinationVnum == toRoom.vnum
@@ -748,9 +818,9 @@ class SingleAreaMapGenerator(
     private fun processAreaExit(areaExit: AreaExit) {
         debug("Attempting to link area exit $areaExit...")
         val targetFragment = areaMap.findFragmentWithRoom(areaExit.room)
-                ?: throw MapGenerationError("Unable to find fragment for $areaExit")
+            ?: throw MapGenerationError("Unable to find fragment for $areaExit")
         val exitRoomCell = targetFragment.findCellForRoom(areaExit.room)
-                ?: throw MapGenerationError("Unable to find exit room $areaExit")
+            ?: throw MapGenerationError("Unable to find exit room $areaExit")
         val exitDirection = areaExit.exit.direction
 
         // Can we add alongside the exit room without shifting cells around?
@@ -761,8 +831,10 @@ class SingleAreaMapGenerator(
 
             if (!targetFragment.hasCellAt(targetPosition)) {
                 val areaExitCell = AreaExitCell(
-                        targetPosition, areaExit.targetArea, exitDirection.reverse(),
-                        renderer.fileNameFor(areaExit.targetSourceFile.id),
+                    targetPosition,
+                    areaExit.targetArea,
+                    exitDirection.reverse(),
+                    renderer.fileNameFor(areaExit.targetSourceFile.id),
                 )
                 debug("Placing area exit cell $areaExitCell in free position")
                 targetFragment.addCell(areaExitCell)
@@ -773,8 +845,10 @@ class SingleAreaMapGenerator(
 
         // Create a new fragment to hold the area exit
         val areaExitCell = AreaExitCell(
-                Position.ORIGIN, areaExit.targetArea, exitDirection.reverse(),
-                renderer.fileNameFor(areaExit.targetSourceFile.id),
+            Position.ORIGIN,
+            areaExit.targetArea,
+            exitDirection.reverse(),
+            renderer.fileNameFor(areaExit.targetSourceFile.id),
         )
         val exitLabel = labeller.nextLabel()
         areaExitCell.label = exitLabel
@@ -782,16 +856,19 @@ class SingleAreaMapGenerator(
         val fragment = areaMap.newFragment()
         fragment.addCell(areaExitCell)
 
-        val description = "${exitDirection.description.upperCaseFirst()} to $exitLabel (${areaExit.targetArea.name})"
+        val description =
+            "${exitDirection.description.upperCaseFirst()} to $exitLabel (${areaExit.targetArea.name})"
         exitRoomCell.setJump(exitDirection, exitLabel, description)
         createJumpToRoomCell(areaExitCell, exitRoomCell, exitDirection.reverse())
     }
 
     private fun verify() {
-        if (unlinkedRooms.isNotEmpty())
+        if (unlinkedRooms.isNotEmpty()) {
             throw MapGenerationError("${unlinkedRooms.size} rooms were not linked!")
+        }
 
-        if (unlinkedExits.isNotEmpty())
+        if (unlinkedExits.isNotEmpty()) {
             throw MapGenerationError("${unlinkedExits.size} exits were not linked!")
+        }
     }
 }
