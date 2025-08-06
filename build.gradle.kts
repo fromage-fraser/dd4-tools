@@ -33,10 +33,5 @@ subprojects {
             reporter(ReporterType.PLAIN)
             reporter(ReporterType.HTML)
         }
-
-        filter {
-            include("src/main/kotlin/**")
-            include("src/test/kotlin/**")
-        }
     }
 }
