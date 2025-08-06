@@ -11,34 +11,34 @@ fun main(args: Array<String>) {
     val argParser = ArgParser("map-maker")
 
     val areaFileName = argParser.option(
-            ArgType.String,
-            fullName = "input-file",
-            shortName = "i",
-            description = "Input area file",
+        ArgType.String,
+        fullName = "input-file",
+        shortName = "i",
+        description = "Input area file",
     ).required()
 
     val outputDirPath = argParser.option(
-            ArgType.String,
-            fullName = "output-dir",
-            shortName = "o",
-            description = "Output directory",
+        ArgType.String,
+        fullName = "output-dir",
+        shortName = "o",
+        description = "Output directory",
     ).required()
 
     val verbose = argParser.option(
-            ArgType.Boolean,
-            fullName = "verbose",
-            shortName = "v",
-            description = "Verbose logging",
+        ArgType.Boolean,
+        fullName = "verbose",
+        shortName = "v",
+        description = "Verbose logging",
     ).default(false)
 
     argParser.parse(args)
 
     val mapMaker = MapMaker(
-            areaFileName.value,
-            outputDirPath.value,
-            AreaFileMapper(),
-            HtmlRenderer(),
-            verbose.value,
+        areaFileName.value,
+        outputDirPath.value,
+        AreaFileMapper(),
+        HtmlRenderer(),
+        verbose.value,
     )
 
     mapMaker.generate()

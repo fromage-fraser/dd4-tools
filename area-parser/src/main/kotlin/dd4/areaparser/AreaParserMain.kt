@@ -10,31 +10,31 @@ fun main(args: Array<String>) {
     val argParser = ArgParser("area-parser")
 
     val inputDirName = argParser.option(
-            ArgType.String,
-            fullName = "input-dir",
-            shortName = "i",
-            description = "Input file directory",
+        ArgType.String,
+        fullName = "input-dir",
+        shortName = "i",
+        description = "Input file directory",
     ).required()
 
     val areaListFileName = argParser.option(
-            ArgType.String,
-            fullName = "area-list",
-            shortName = "a",
-            description = "Area list file",
+        ArgType.String,
+        fullName = "area-list",
+        shortName = "a",
+        description = "Area list file",
     ).default("area.lst")
 
     val outputFilePath = argParser.option(
-            ArgType.String,
-            fullName = "output-file",
-            shortName = "o",
-            description = "Output file",
+        ArgType.String,
+        fullName = "output-file",
+        shortName = "o",
+        description = "Output file",
     ).required()
 
     val verbose = argParser.option(
-            ArgType.Boolean,
-            fullName = "verbose",
-            shortName = "v",
-            description = "Verbose logging",
+        ArgType.Boolean,
+        fullName = "verbose",
+        shortName = "v",
+        description = "Verbose logging",
     ).default(false)
 
     argParser.parse(args)

@@ -27,9 +27,9 @@ import java.io.File
 import java.nio.file.Paths
 
 class AreaParser(
-        private val inputDirName: String,
-        private val areaListFileName: String,
-        private val verbose: Boolean = false,
+    private val inputDirName: String,
+    private val areaListFileName: String,
+    private val verbose: Boolean = false,
 ) {
     private companion object {
         const val MOB_PROG_FILE_DIR = "MOBProgs"
@@ -39,12 +39,12 @@ class AreaParser(
         val areaFileNames = parseAreaList()
         val areaFiles = areaFileNames.map { parseAreaFile(it) }
         info(
-                "Read ${areaFiles.size} area files, " +
-                        areaFiles.map { it.mobiles.size }.sum() + " mobiles, " +
-                        areaFiles.map { it.objects.size }.sum() + " objects, " +
-                        areaFiles.map { it.rooms.size }.sum() + " rooms, " +
-                        areaFiles.map { it.resets.size }.sum() + " resets, " +
-                        areaFiles.map { it.helps.size }.sum() + " helps",
+            "Read ${areaFiles.size} area files, " +
+                areaFiles.sumOf { it.mobiles.size } + " mobiles, " +
+                areaFiles.sumOf { it.objects.size } + " objects, " +
+                areaFiles.sumOf { it.rooms.size } + " rooms, " +
+                areaFiles.sumOf { it.resets.size } + " resets, " +
+                areaFiles.sumOf { it.helps.size } + " helps",
         )
         return areaFiles
     }
@@ -62,9 +62,9 @@ class AreaParser(
         info("Using area list $areaListPath")
 
         return File(areaListPath.toString()).readLines()
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-                .filter { it.endsWith(".are", ignoreCase = true) }
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .filter { it.endsWith(".are", ignoreCase = true) }
     }
 
     private fun parseAreaFile(areaFileName: String): SourceFile {
@@ -73,9 +73,9 @@ class AreaParser(
         info("Parsing area file $areaFilePath ($id)")
 
         val sourceFile = SourceFile(
-                id = id,
-                fileName = areaFileName,
-                filePath = areaFilePath.toString(),
+            id = id,
+            fileName = areaFileName,
+            filePath = areaFilePath.toString(),
         )
 
         AreaFileReader(areaFilePath).use { reader ->
@@ -91,39 +91,78 @@ class AreaParser(
                         // We expect only one area per source file (note, some source files have no area).
                         // However, it is probably "fine" to have multiple areas and to just simply remember the
                         // last found area as the current area. In practice, the server does not define areas this way.
-                        if (sourceFile.area != null)
-                            throw ParseError("$id: AREA section redefined in file $areaFileName", reader)
+                        if (sourceFile.area != null) {
+                            throw ParseError(
+                                "$id: AREA section redefined in file $areaFileName",
+                                reader,
+                            )
+                        }
                         sourceFile.area = parseAreaSection(reader, id)
                     }
 
                     Section.AREA_SPECIAL -> {
                         // See note in AREA handling regarding redefinition.
-                        if (sourceFile.areaSpecial != null)
-                            throw ParseError("$id: AREA_SPECIAL section redefined in file $areaFileName", reader)
+                        if (sourceFile.areaSpecial != null) {
+                            throw ParseError(
+                                "$id: AREA_SPECIAL section redefined in file $areaFileName",
+                                reader,
+                            )
+                        }
                         sourceFile.areaSpecial = parseAreaSpecialSection(reader)
                     }
 
                     Section.RECALL -> {
                         // See note in AREA handling regarding redefinition.
-                        if (sourceFile.recall != null)
-                            throw ParseError("$id: RECALL section redefined in file $areaFileName", reader)
+                        if (sourceFile.recall != null) {
+                            throw ParseError(
+                                "$id: RECALL section redefined in file $areaFileName",
+                                reader,
+                            )
+                        }
                         sourceFile.recall = parseRecallSection(reader)
                     }
 
-                    Section.MOBILES -> sourceFile.addMobiles(parseMobilesSection(sourceFile, reader))
+                    Section.MOBILES -> sourceFile.addMobiles(
+                        parseMobilesSection(
+                            sourceFile,
+                            reader,
+                        ),
+                    )
+
                     Section.MOBPROGS -> {
                         val mobProgAssignments = parseMobProgsSection(reader)
                         sourceFile.addMobProgAssignments(mobProgAssignments)
-                        sourceFile.addMobProgFiles(mobProgAssignments.map { loadMobProgFile(it.fileName) })
+                        sourceFile.addMobProgFiles(
+                            mobProgAssignments.map {
+                                loadMobProgFile(it.fileName)
+                            },
+                        )
                     }
 
-                    Section.OBJECTS -> sourceFile.addObjects(parseObjectsSection(sourceFile, reader))
-                    Section.OBJECT_SETS -> sourceFile.addObjectSets(parseObjectSetsSection(sourceFile, reader))
+                    Section.OBJECTS -> sourceFile.addObjects(
+                        parseObjectsSection(
+                            sourceFile,
+                            reader,
+                        ),
+                    )
+
+                    Section.OBJECT_SETS -> sourceFile.addObjectSets(
+                        parseObjectSetsSection(
+                            sourceFile,
+                            reader,
+                        ),
+                    )
+
                     Section.ROOMS -> sourceFile.addRooms(parseRoomsSection(sourceFile, reader))
                     Section.RESETS -> sourceFile.addResets(parseResetsSection(sourceFile, reader))
                     Section.SHOPS -> sourceFile.addShops(parseShopsSection(sourceFile, reader))
                     Section.SPECIAL_FUNCTIONS ->
-                        sourceFile.addSpecialFunctions(parseSpecialFunctionsSection(sourceFile, reader))
+                        sourceFile.addSpecialFunctions(
+                            parseSpecialFunctionsSection(
+                                sourceFile,
+                                reader,
+                            ),
+                        )
 
                     Section.HELPS -> sourceFile.addHelps(parseHelpsSection(reader))
                     Section.GAMES -> sourceFile.addGames(parseGamesSection(sourceFile, reader))
@@ -134,17 +173,15 @@ class AreaParser(
         return sourceFile
     }
 
-    private fun parseAreaSection(reader: AreaFileReader, id: String): Area {
-        return Area(
-                id = id,
-                author = reader.readString(),
-                name = reader.readString(),
-                lowLevel = reader.readNumber(),
-                highLevel = reader.readNumber(),
-                enforcedLowLevel = reader.readNumber(),
-                enforcedHighLevel = reader.readNumber(),
-        )
-    }
+    private fun parseAreaSection(reader: AreaFileReader, id: String): Area = Area(
+        id = id,
+        author = reader.readString(),
+        name = reader.readString(),
+        lowLevel = reader.readNumber(),
+        highLevel = reader.readNumber(),
+        enforcedLowLevel = reader.readNumber(),
+        enforcedHighLevel = reader.readNumber(),
+    )
 
     private fun parseAreaSpecialSection(reader: AreaFileReader): AreaSpecial {
         val flags = mutableSetOf<AreaSpecial.AreaFlag>()
@@ -155,18 +192,23 @@ class AreaParser(
         while (loop) {
             when (val word = reader.readWord()) {
                 Markup.AREA_SPECIAL_END_OF_SECTION -> loop = false
-                Markup.AREA_SPECIAL_EXPERIENCE_MODIFIER_TAG -> experienceModifier = reader.readNumber()
+                Markup.AREA_SPECIAL_EXPERIENCE_MODIFIER_TAG ->
+                    experienceModifier =
+                        reader.readNumber()
+
                 Markup.AREA_SPECIAL_RESET_MESSAGE_TAG -> resetMessage = reader.readString()
                 else -> flags.add(AreaSpecial.AreaFlag.fromTag(word))
             }
         }
 
-        return AreaSpecial(flags = flags, experienceModifier = experienceModifier, resetMessage = resetMessage)
+        return AreaSpecial(
+            flags = flags,
+            experienceModifier = experienceModifier,
+            resetMessage = resetMessage,
+        )
     }
 
-    private fun parseRecallSection(reader: AreaFileReader): Recall {
-        return Recall(reader.readNumber())
-    }
+    private fun parseRecallSection(reader: AreaFileReader): Recall = Recall(reader.readNumber())
 
     private fun parseMobilesSection(sourceFile: SourceFile, reader: AreaFileReader): List<Mobile> {
         val mobiles = mutableListOf<Mobile>()
@@ -180,7 +222,7 @@ class AreaParser(
             val actFlags = Mobile.ActFlag.toSet(reader.readBits())
             val effectFlags = Mobile.EffectFlag.toSet(reader.readBits())
             val alignment = reader.readNumber()
-            reader.readLetter()  // 'S' (for "simple"?)
+            reader.readLetter() // 'S' (for "simple"?)
             val level = reader.readNumber()
 
             // Unused
@@ -221,25 +263,30 @@ class AreaParser(
                     Markup.MOBILE_MOB_PROG_START_DELIMITER -> {
                         reader.readChar()
                         mobProgs.add(
-                                MobProg(
-                                        type = reader.readWord(),
-                                        args = reader.readString(),
-                                        commands = reader.readString(),
-                                ),
+                            MobProg(
+                                type = reader.readWord(),
+                                args = reader.readString(),
+                                commands = reader.readString(),
+                            ),
                         )
                     }
 
                     Markup.MOBILE_MOB_PROG_END_DELIMITER -> reader.readToEol()
                     Markup.MOBILE_TAUGHT_SKILLS_DELIMITER -> {
                         reader.readChar()
-                        taughtSkills.add(Mobile.TaughtSkill(level = reader.readNumber(), skill = reader.readWord()))
+                        taughtSkills.add(
+                            Mobile.TaughtSkill(
+                                level = reader.readNumber(),
+                                skill = reader.readWord(),
+                            ),
+                        )
                     }
 
                     Markup.MOBILE_SPEC_DELIMITER -> {
                         reader.readChar()
                         mobSpec = MobSpec(
-                                name = reader.readString(),
-                                rank = reader.readString(),
+                            name = reader.readString(),
+                            rank = reader.readString(),
                         )
                     }
 
@@ -250,20 +297,20 @@ class AreaParser(
             }
 
             val mobile = Mobile(
-                    vnum = vnum,
-                    name = name,
-                    shortDescription = shortDescription,
-                    longDescription = longDescription,
-                    fullDescription = fullDescription,
-                    alignment = alignment,
-                    level = level,
-                    sex = sex,
-                    actFlags = actFlags,
-                    effectFlags = effectFlags,
-                    bodyFormFlags = bodyFormFlags,
-                    mobProgs = mobProgs,
-                    taughtSkills = taughtSkills,
-                    mobSpec = mobSpec,
+                vnum = vnum,
+                name = name,
+                shortDescription = shortDescription,
+                longDescription = longDescription,
+                fullDescription = fullDescription,
+                alignment = alignment,
+                level = level,
+                sex = sex,
+                actFlags = actFlags,
+                effectFlags = effectFlags,
+                bodyFormFlags = bodyFormFlags,
+                mobProgs = mobProgs,
+                taughtSkills = taughtSkills,
+                mobSpec = mobSpec,
             )
 
             debug("${sourceFile.id}: $mobile")
@@ -283,12 +330,12 @@ class AreaParser(
             when (val nextChar = reader.readChar()?.uppercaseChar()) {
                 Markup.MOB_PROG_START_DELIMITER -> {
                     mobProgAssignments.add(
-                            MobProgAssignment(
-                                    type = nextChar,
-                                    mobileVnum = reader.readNumber(),
-                                    fileName = reader.readWord(),
-                                    comment = reader.readToEol(),
-                            ),
+                        MobProgAssignment(
+                            type = nextChar,
+                            mobileVnum = reader.readNumber(),
+                            fileName = reader.readWord(),
+                            comment = reader.readToEol(),
+                        ),
                     )
                 }
 
@@ -310,28 +357,30 @@ class AreaParser(
             val name = reader.readString()
             val shortDescription = reader.readString()
             val fullDescription = reader.readString().upperCaseFirst()
-            reader.readString()  // Unused: Action description
+            reader.readString() // Unused: Action description
 
             val type = Item.Type.fromId(reader.readNumber())
             val extraFlags = Item.ExtraFlag.toSet(reader.readBits())
 
             val trap =
-                    if (extraFlags.contains(Item.ExtraFlag.TRAP))
-                        Item.Trap(
-                                damage = reader.readNumber(),
-                                effect = reader.readNumber(),
-                                charge = reader.readNumber(),
-                        )
-                    else
-                        null
+                if (extraFlags.contains(Item.ExtraFlag.TRAP)) {
+                    Item.Trap(
+                        damage = reader.readNumber(),
+                        effect = reader.readNumber(),
+                        charge = reader.readNumber(),
+                    )
+                } else {
+                    null
+                }
 
             val ego =
-                    if (extraFlags.contains(Item.ExtraFlag.EGO))
-                        Item.Ego(
-                                flags = reader.readNumber(),
-                        )
-                    else
-                        null
+                if (extraFlags.contains(Item.ExtraFlag.EGO)) {
+                    Item.Ego(
+                        flags = reader.readNumber(),
+                    )
+                } else {
+                    null
+                }
 
             val wearFlags = Item.WearFlag.toSet(reader.readBits())
             val value1 = reader.readString()
@@ -353,20 +402,20 @@ class AreaParser(
                     Markup.OBJECT_EXTRA_DESCRIPTION_DELIMITER -> {
                         reader.readChar()
                         extraDescriptions.add(
-                                Item.ExtraDescription(
-                                        keywords = reader.readString(),
-                                        description = reader.readString(),
-                                ),
+                            Item.ExtraDescription(
+                                keywords = reader.readString(),
+                                description = reader.readString(),
+                            ),
                         )
                     }
 
                     Markup.OBJECT_EFFECT_DELIMITER -> {
                         reader.readChar()
                         effects.add(
-                                Item.Effect(
-                                        attribute = Item.EffectAttribute.fromId(reader.readNumber()),
-                                        modifier = reader.readNumber(),
-                                ),
+                            Item.Effect(
+                                attribute = Item.EffectAttribute.fromId(reader.readNumber()),
+                                modifier = reader.readNumber(),
+                            ),
                         )
                     }
 
@@ -384,23 +433,23 @@ class AreaParser(
             val typeProperties = typePropertiesFor(type, values)
 
             val item = Item(
-                    vnum = vnum,
-                    name = name,
-                    shortDescription = shortDescription,
-                    fullDescription = fullDescription,
-                    extraDescriptions = extraDescriptions,
-                    type = type,
-                    values = values,
-                    weight = weight,
-                    cost = cost,
-                    level = level,
-                    effects = effects,
-                    extraFlags = extraFlags,
-                    wearFlags = wearFlags,
-                    trap = trap,
-                    ego = ego,
-                    typeProperties = typeProperties,
-                    maxInstances = maxInstances,
+                vnum = vnum,
+                name = name,
+                shortDescription = shortDescription,
+                fullDescription = fullDescription,
+                extraDescriptions = extraDescriptions,
+                type = type,
+                values = values,
+                weight = weight,
+                cost = cost,
+                level = level,
+                effects = effects,
+                extraFlags = extraFlags,
+                wearFlags = wearFlags,
+                trap = trap,
+                ego = ego,
+                typeProperties = typeProperties,
+                maxInstances = maxInstances,
             )
 
             debug("${sourceFile.id}: $item")
@@ -411,11 +460,14 @@ class AreaParser(
         return objects
     }
 
-    private fun parseObjectSetsSection(sourceFile: SourceFile, reader: AreaFileReader): List<ItemSet> {
+    private fun parseObjectSetsSection(
+        sourceFile: SourceFile,
+        reader: AreaFileReader,
+    ): List<ItemSet> {
         val objectSets = mutableListOf<ItemSet>()
         var vnum = reader.readVnum()
 
-        //TODO: Actually store ItemSet data
+        // TODO: Actually store ItemSet data
         while (vnum != 0) {
             reader.readString() // name
             reader.readString() // description
@@ -449,7 +501,7 @@ class AreaParser(
             }
 
             val itemSet = ItemSet(
-                    vnum = vnum,
+                vnum = vnum,
             )
 
             debug("${sourceFile.id}: $itemSet")
@@ -466,9 +518,9 @@ class AreaParser(
         when (type) {
             Item.Type.WEAPON -> {
                 try {
-                    properties.weaponAttackType = Item.WeaponAttackType.fromId(values.value3.toInt())
-                }
-                catch (e: Exception) {
+                    properties.weaponAttackType =
+                        Item.WeaponAttackType.fromId(values.value3.toInt())
+                } catch (_: Exception) {
                     // This is probably bollocks
                     properties.weaponAttackType = Item.WeaponAttackType.HIT
                 }
@@ -511,9 +563,10 @@ class AreaParser(
         while (vnum != 0) {
             val name = reader.readString()
             val description = reader.readString()
-            reader.readNumber()  // Unused: Area number
+            reader.readNumber() // Unused: Area number
             val flags = Room.Flag.toSet(reader.readBits())
-            val sectorType = Room.SectorType.findById(reader.readNumber()) ?: Room.SectorType.UNKNOWN
+            val sectorType =
+                Room.SectorType.findById(reader.readNumber()) ?: Room.SectorType.UNKNOWN
 
             val exits = mutableMapOf<Direction, Exit>()
             val extraDescriptions = mutableListOf<Room.ExtraDescription>()
@@ -526,26 +579,28 @@ class AreaParser(
                     Markup.ROOM_DOOR_DELIMITER -> {
                         val direction = Direction.fromId(reader.readNumber())
                         val exit = Exit(
-                                direction = direction,
-                                description = reader.readString(),
-                                keywords = reader.readString(),
-                                flags = Exit.Flag.fromLocks(reader.readNumber()),
-                                keyVnum = reader.readNumber(),
-                                destinationVnum = reader.readNumber(),
+                            direction = direction,
+                            description = reader.readString(),
+                            keywords = reader.readString(),
+                            flags = Exit.Flag.fromLocks(reader.readNumber()),
+                            keyVnum = reader.readNumber(),
+                            destinationVnum = reader.readNumber(),
                         )
 
                         if (exits.containsKey(direction)) {
-                            info("${sourceFile.id}: Warning: exit direction $direction redefined in room $vnum")
+                            info(
+                                "${sourceFile.id}: Warning: exit direction $direction redefined in room $vnum",
+                            )
                         }
                         exits[direction] = exit
                     }
 
                     Markup.ROOM_EXTRA_DESCRIPTION_DELIMITER -> {
                         extraDescriptions.add(
-                                Room.ExtraDescription(
-                                        keywords = reader.readString(),
-                                        description = reader.readString(),
-                                ),
+                            Room.ExtraDescription(
+                                keywords = reader.readString(),
+                                description = reader.readString(),
+                            ),
                         )
                     }
 
@@ -556,13 +611,13 @@ class AreaParser(
             }
 
             val room = Room(
-                    vnum = vnum,
-                    name = name,
-                    description = description,
-                    flags = flags,
-                    sectorType = sectorType,
-                    exits = exits,
-                    extraDescriptions = extraDescriptions,
+                vnum = vnum,
+                name = name,
+                description = description,
+                flags = flags,
+                sectorType = sectorType,
+                exits = exits,
+                extraDescriptions = extraDescriptions,
             )
 
             debug("${sourceFile.id}: $room")
@@ -587,17 +642,17 @@ class AreaParser(
                 else -> {
                     val type = Reset.Type.fromId(nextChar)
                     val reset = Reset(
-                            type = type,
-                            arg0 = reader.readNumber(),
-                            arg1 = reader.readNumber(),
-                            arg2 = reader.readNumber(),
-                            arg3 = when (type) {
-                                Reset.Type.OBJECT_TO_MOBILE_INVENTORY -> 0
-                                Reset.Type.RANDOMIZE_EXITS -> 0
-                                Reset.Type.UNKNOWN_F -> 0
-                                else -> reader.readNumber()
-                            },
-                            comment = reader.readToEol(),
+                        type = type,
+                        arg0 = reader.readNumber(),
+                        arg1 = reader.readNumber(),
+                        arg2 = reader.readNumber(),
+                        arg3 = when (type) {
+                            Reset.Type.OBJECT_TO_MOBILE_INVENTORY -> 0
+                            Reset.Type.RANDOMIZE_EXITS -> 0
+                            Reset.Type.UNKNOWN_F -> 0
+                            else -> reader.readNumber()
+                        },
+                        comment = reader.readToEol(),
                     )
 
                     debug("${sourceFile.id}: $reset")
@@ -615,18 +670,17 @@ class AreaParser(
 
         while (keeperVnum != Vnum.NULL_VNUM) {
             val shop = Shop(
-                    keeperVnum = keeperVnum,
-                    buyTypes = (1..Shop.SHOP_BUY_TYPE_SLOTS)
-                            .map { reader.readNumber() }
-                            .filter { it > 0 }
-                            .map { Item.Type.findById(it) }
-                            .filterNotNull()
-                            .toSet(),
-                    buyProfit = reader.readNumber(),
-                    sellProfit = reader.readNumber(),
-                    openingHour = reader.readNumber(),
-                    closingHour = reader.readNumber(),
-                    comment = reader.readToEol(),
+                keeperVnum = keeperVnum,
+                buyTypes = (1..Shop.SHOP_BUY_TYPE_SLOTS)
+                    .map { reader.readNumber() }
+                    .filter { it > 0 }
+                    .mapNotNull { Item.Type.findById(it) }
+                    .toSet(),
+                buyProfit = reader.readNumber(),
+                sellProfit = reader.readNumber(),
+                openingHour = reader.readNumber(),
+                closingHour = reader.readNumber(),
+                comment = reader.readToEol(),
             )
 
             debug("${sourceFile.id}: $shop")
@@ -637,7 +691,10 @@ class AreaParser(
         return shops
     }
 
-    private fun parseSpecialFunctionsSection(sourceFile: SourceFile, reader: AreaFileReader): List<SpecialFunction> {
+    private fun parseSpecialFunctionsSection(
+        sourceFile: SourceFile,
+        reader: AreaFileReader,
+    ): List<SpecialFunction> {
         val specialFunctions = mutableListOf<SpecialFunction>()
         var loop = true
 
@@ -649,9 +706,9 @@ class AreaParser(
                 Markup.SPECIAL_FUNCTION_COMMENT_DELIMITER -> reader.readToEol()
                 Markup.SPECIAL_FUNCTION_MOBILE_DELIMITER -> {
                     val specialFunction = SpecialFunction(
-                            mobileVnum = reader.readNumber(),
-                            function = reader.readWord(),
-                            comment = reader.readToEol(),
+                        mobileVnum = reader.readNumber(),
+                        function = reader.readWord(),
+                        comment = reader.readToEol(),
                     )
 
                     debug("${sourceFile.id}: $specialFunction")
@@ -675,11 +732,11 @@ class AreaParser(
             if (keywords == Markup.HELP_END_OF_SECTION_DELIMITER) break
 
             helps.add(
-                    Help(
-                            level = level,
-                            keywords = keywords,
-                            text = reader.readString(),
-                    ),
+                Help(
+                    level = level,
+                    keywords = keywords,
+                    text = reader.readString(),
+                ),
             )
         }
 
@@ -697,16 +754,16 @@ class AreaParser(
                 Markup.GAME_END_OF_SECTION_DELIMITER -> loop = false
                 Markup.GAME_COMMENT_DELIMITER -> reader.readToEol()
                 Markup.GAME_MOBILE_DELIMITER -> {
-                    //TODO: Populate Game completely
+                    // TODO: Populate Game completely
                     val croupierVnum = reader.readNumber()
                     reader.readWord()
                     reader.readNumber()
                     reader.readNumber()
                     reader.readNumber()
-                    reader.readToEol()  // Comments
+                    reader.readToEol() // Comments
 
                     val game = Game(
-                            croupierVnum = croupierVnum,
+                        croupierVnum = croupierVnum,
                     )
 
                     debug("${sourceFile.id}: $game")
@@ -733,23 +790,25 @@ class AreaParser(
                 when (val char = reader.readChar()) {
                     Markup.MOBILE_MOB_PROG_START_DELIMITER -> {
                         mobProgs.add(
-                                MobProg(
-                                        type = reader.readWord(),
-                                        args = reader.readString(),
-                                        commands = reader.readString(),
-                                ),
+                            MobProg(
+                                type = reader.readWord(),
+                                args = reader.readString(),
+                                commands = reader.readString(),
+                            ),
                         )
                     }
 
                     Markup.MOBILE_MOB_PROG_END_DELIMITER -> break
-                    else -> throw ParseError("Unexpected character '$char' when reading mob prog file '$fileName")
+                    else -> throw ParseError(
+                        "Unexpected character '$char' when reading mob prog file '$fileName",
+                    )
                 }
             }
         }
 
         return MobProgFile(
-                fileName = fileName,
-                mobProgs = mobProgs,
+            fileName = fileName,
+            mobProgs = mobProgs,
         )
     }
 }

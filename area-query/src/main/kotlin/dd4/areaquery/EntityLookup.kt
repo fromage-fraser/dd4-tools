@@ -17,58 +17,57 @@ class EntityLookup(sourceFiles: List<SourceFile>) {
 
     init {
         itemVnumLookup = sourceFiles
-                .flatMap { areaFile ->
-                    areaFile.objects.map { item ->
-                        Pair(item.vnum, item)
-                    }
+            .flatMap { areaFile ->
+                areaFile.objects.map { item ->
+                    Pair(item.vnum, item)
                 }
-                .toMap()
+            }
+            .toMap()
 
         mobileVnumLookup = sourceFiles
-                .flatMap { areaFile ->
-                    areaFile.mobiles.map { mobile ->
-                        Pair(mobile.vnum, mobile)
-                    }
+            .flatMap { areaFile ->
+                areaFile.mobiles.map { mobile ->
+                    Pair(mobile.vnum, mobile)
                 }
-                .toMap()
+            }
+            .toMap()
 
         roomVnumLookup = sourceFiles
-                .flatMap { areaFile ->
-                    areaFile.rooms.map { room ->
-                        Pair(room.vnum, room)
-                    }
+            .flatMap { areaFile ->
+                areaFile.rooms.map { room ->
+                    Pair(room.vnum, room)
                 }
-                .toMap()
+            }
+            .toMap()
 
         shopVnumLookup = sourceFiles
-                .flatMap { areaFile ->
-                    areaFile.shops.map { shop ->
-                        Pair(shop.keeperVnum, shop)
-                    }
+            .flatMap { areaFile ->
+                areaFile.shops.map { shop ->
+                    Pair(shop.keeperVnum, shop)
                 }
-                .toMap()
+            }
+            .toMap()
 
         mobProgFileLookup = sourceFiles
-                .flatMap { areaFile ->
-                    areaFile.mobProgFiles.map { mobProgFile ->
-                        Pair(mobProgFile.fileName, mobProgFile)
-                    }
+            .flatMap { areaFile ->
+                areaFile.mobProgFiles.map { mobProgFile ->
+                    Pair(mobProgFile.fileName, mobProgFile)
                 }
-                .toMap()
+            }
+            .toMap()
     }
 
     fun item(vnum: Int) =
-            itemVnumLookup[vnum] ?: throw IllegalArgumentException("Failed to load item vnum $vnum")
+        itemVnumLookup[vnum] ?: throw IllegalArgumentException("Failed to load item vnum $vnum")
 
     fun mobile(vnum: Int) =
-            mobileVnumLookup[vnum] ?: throw IllegalArgumentException("Failed to load mobile vnum $vnum")
+        mobileVnumLookup[vnum] ?: throw IllegalArgumentException("Failed to load mobile vnum $vnum")
 
     fun room(vnum: Int) =
-            roomVnumLookup[vnum] ?: throw IllegalArgumentException("Failed to load room vnum $vnum")
+        roomVnumLookup[vnum] ?: throw IllegalArgumentException("Failed to load room vnum $vnum")
 
-    fun shop(mobileVnum: Int) =
-            shopVnumLookup[mobileVnum]
+    fun shop(mobileVnum: Int) = shopVnumLookup[mobileVnum]
 
-    fun mobProgFile(fileName: String) =
-            mobProgFileLookup[fileName] ?: throw IllegalArgumentException("Failed to load mob prog file $fileName")
+    fun mobProgFile(fileName: String) = mobProgFileLookup[fileName]
+        ?: throw IllegalArgumentException("Failed to load mob prog file $fileName")
 }

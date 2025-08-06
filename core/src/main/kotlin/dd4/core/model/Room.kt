@@ -4,18 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonValue
 
 data class Room(
-        val vnum: Int,
-        val name: String,
-        val description: String,
-        val flags: Set<Flag>,
-        val sectorType: SectorType,
-        val exits: Map<Direction, Exit>,
-        val extraDescriptions: List<ExtraDescription>,
+    val vnum: Int,
+    val name: String,
+    val description: String,
+    val flags: Set<Flag>,
+    val sectorType: SectorType,
+    val exits: Map<Direction, Exit>,
+    val extraDescriptions: List<ExtraDescription>,
 ) {
-    enum class Flag(
-            @JsonValue val tag: String,
-            val bit: ULong,
-    ) {
+    enum class Flag(@JsonValue val tag: String, val bit: ULong) {
         DARK("dark", 0x1u),
         NO_MOB("no_mob", 0x4u),
         INDOORS("indoors", 0x8u),
@@ -34,17 +31,15 @@ data class Room(
         BURNING("burning", 0x40000u),
         NO_MOUNT("no_mount", 0x80000u),
         TOXIC("toxic", 0x100000u),
-        NO_DROP("no_drop", 0x8000000000000000u);
+        NO_DROP("no_drop", 0x8000000000000000u),
+        ;
 
         companion object {
-            fun toSet(value: ULong) = values().filter { value.and(it.bit) != 0uL }.toSet()
+            fun toSet(value: ULong) = entries.filter { value.and(it.bit) != 0uL }.toSet()
         }
     }
 
-    enum class SectorType(
-            @JsonValue val tag: String,
-            val id: Int,
-    ) {
+    enum class SectorType(@JsonValue val tag: String, val id: Int) {
         UNKNOWN("unknown", -1),
         INSIDE("inside", 0),
         CITY("city", 1),
@@ -58,31 +53,25 @@ data class Room(
         AIR("air", 9),
         DESERT("desert", 10),
         SWAMP("swamp", 11),
-        UNDERWATER_GROUND("underwater_ground", 12);
+        UNDERWATER_GROUND("underwater_ground", 12),
+        ;
 
         companion object {
-            fun fromId(value: Int) =
-                    try {
-                        values().first { it.id == value }
-                    }
-                    catch (e: NoSuchElementException) {
-                        throw IllegalArgumentException("Invalid sector type ID: $value")
-                    }
+            fun fromId(value: Int) = try {
+                entries.first { it.id == value }
+            } catch (_: NoSuchElementException) {
+                throw IllegalArgumentException("Invalid sector type ID: $value")
+            }
 
-            fun findById(value: Int) = values().find { it.id == value }
+            fun findById(value: Int) = entries.find { it.id == value }
         }
     }
 
-    data class ExtraDescription(
-            val keywords: String,
-            val description: String,
-    )
+    data class ExtraDescription(val keywords: String, val description: String)
 
-    override fun toString(): String {
-        return "Room(#$vnum '$name' sectorType=${sectorType.tag}" +
-                " flags=" + flags.joinToString(",") { it.tag }.ifEmpty { "none" } +
-                ")"
-    }
+    override fun toString(): String = "Room(#$vnum '$name' sectorType=${sectorType.tag}" +
+        " flags=" + flags.joinToString(",") { it.tag }.ifEmpty { "none" } +
+        ")"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -90,20 +79,16 @@ data class Room(
 
         other as Room
 
-        if (vnum != other.vnum) return false
-
-        return true
+        return vnum == other.vnum
     }
 
-    override fun hashCode(): Int {
-        return vnum
-    }
+    override fun hashCode(): Int = vnum
 
     @get:JsonIgnore
     val cleanName: String
         get() = this.name
-                .replace(Regex("[{}]."), "")
-                .replace(Regex("<[^>]*>"), "")
+            .replace(Regex("[{}]."), "")
+            .replace(Regex("<[^>]*>"), "")
 
     fun exit(direction: Direction) = exits[direction]
 

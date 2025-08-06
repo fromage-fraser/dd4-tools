@@ -5,31 +5,26 @@ import dd4.core.model.Direction
 import dd4.core.model.Exit
 import dd4.core.model.Room
 
-abstract class Cell(
-        var position: Position,
-        var label: String? = null,
-) {
-    enum class Edge(
-            val style: String,
-    ) {
+abstract class Cell(var position: Position, var label: String? = null) {
+    enum class Edge(val style: String) {
         NONE("none"),
         OPEN("open"),
         DOOR_NORTH("door-north"),
         DOOR_SOUTH("door-south"),
         DOOR_EAST("door-east"),
-        DOOR_WEST("door-west")
+        DOOR_WEST("door-west"),
     }
 
     data class Link(
-            val state: State,
-            val targetLabel: String? = null,
-            val description: String? = null,
+        val state: State,
+        val targetLabel: String? = null,
+        val description: String? = null,
     ) {
         enum class State {
             NONE,
             UNLINKED,
             LINKED,
-            JUMP
+            JUMP,
         }
     }
 
@@ -41,29 +36,37 @@ abstract class Cell(
 
     val type = this.javaClass.simpleName
 
-    val northEdge; get() = edge(Direction.NORTH)
+    val northEdge
+        get() = edge(Direction.NORTH)
 
-    val southEdge; get() = edge(Direction.SOUTH)
+    val southEdge
+        get() = edge(Direction.SOUTH)
 
-    val eastEdge; get() = edge(Direction.EAST)
+    val eastEdge
+        get() = edge(Direction.EAST)
 
-    val westEdge; get() = edge(Direction.WEST)
+    val westEdge
+        get() = edge(Direction.WEST)
 
-    val hasNorthEdge; get() = edge(Direction.NORTH) != Edge.NONE
+    val hasNorthEdge
+        get() = edge(Direction.NORTH) != Edge.NONE
 
-    val hasSouthEdge; get() = edge(Direction.SOUTH) != Edge.NONE
+    val hasSouthEdge
+        get() = edge(Direction.SOUTH) != Edge.NONE
 
-    val hasEastEdge; get() = edge(Direction.EAST) != Edge.NONE
+    val hasEastEdge
+        get() = edge(Direction.EAST) != Edge.NONE
 
-    val hasWestEdge; get() = edge(Direction.WEST) != Edge.NONE
+    val hasWestEdge
+        get() = edge(Direction.WEST) != Edge.NONE
 
     val links = mutableMapOf(
-            Direction.NORTH to Link(Link.State.NONE),
-            Direction.SOUTH to Link(Link.State.NONE),
-            Direction.EAST to Link(Link.State.NONE),
-            Direction.WEST to Link(Link.State.NONE),
-            Direction.UP to Link(Link.State.NONE),
-            Direction.DOWN to Link(Link.State.NONE),
+        Direction.NORTH to Link(Link.State.NONE),
+        Direction.SOUTH to Link(Link.State.NONE),
+        Direction.EAST to Link(Link.State.NONE),
+        Direction.WEST to Link(Link.State.NONE),
+        Direction.UP to Link(Link.State.NONE),
+        Direction.DOWN to Link(Link.State.NONE),
     )
 
     fun setNoLink(direction: Direction) {
@@ -82,13 +85,11 @@ abstract class Cell(
         links[direction] = Link(Link.State.JUMP, label, description)
     }
 
-    fun isLinked(direction: Direction) =
-            links[direction]?.state == Link.State.LINKED
+    fun isLinked(direction: Direction) = links[direction]?.state == Link.State.LINKED
 
     fun isLinkedOrHasJump(direction: Direction) =
-            links[direction]?.state == Link.State.LINKED || links[direction]?.state == Link.State.JUMP
+        links[direction]?.state == Link.State.LINKED || links[direction]?.state == Link.State.JUMP
 }
-
 
 class EmptyCell(position: Position) : Cell(position) {
 
@@ -96,29 +97,23 @@ class EmptyCell(position: Position) : Cell(position) {
 
     override fun edge(direction: Direction) = Edge.NONE
 
-    override fun toString(): String {
-        return "EmptyCell(position=$position)"
-    }
+    override fun toString(): String = "EmptyCell(position=$position)"
 }
 
-
 class RoomCell(
-        position: Position,
-        val room: Room,
-        val flags: Set<Flag> = setOf(),
-        label: String? = null,
+    position: Position,
+    val room: Room,
+    val flags: Set<Flag> = setOf(),
+    label: String? = null,
 ) : Cell(position, label) {
 
-    enum class Flag(
-            val style: String,
-            val description: String,
-    ) {
+    enum class Flag(val style: String, val description: String) {
         RANDOMIZED_EXITS("randomized-exits", "Randomized exits"),
         NO_MOBILES("no-mobiles", "No mobiles"),
         NO_RECALL("no-recall", "No recall"),
         HEALER("healer", "Healer"),
         SHOP("shop", "Shop"),
-        TEACHER("teacher", "Teacher")
+        TEACHER("teacher", "Teacher"),
     }
 
     override val style = "room"
@@ -138,63 +133,48 @@ class RoomCell(
         }
     }
 
-    override fun toString(): String {
-        return "RoomCell(position=$position, room=$room, flags=$flags)"
-    }
+    override fun toString(): String = "RoomCell(position=$position, room=$room, flags=$flags)"
 
     fun toRoomAndLabel(): RoomAndLabel = RoomAndLabel(room, label)
 }
 
-
 class AreaExitCell(
-        position: Position,
-        val area: Area,
-        val directionToExitRoom: Direction,
-        val mapReference: String,
+    position: Position,
+    val area: Area,
+    val directionToExitRoom: Direction,
+    val mapReference: String,
 ) : Cell(position) {
 
     override val style = "area-exit"
 
-    override fun edge(direction: Direction): Edge = if (direction == directionToExitRoom) Edge.OPEN else Edge.NONE
+    override fun edge(direction: Direction): Edge =
+        if (direction == directionToExitRoom) Edge.OPEN else Edge.NONE
 
-    override fun toString(): String {
-        return "AreaExitCell(position=$position, area=$area, directionToExitRoom=$directionToExitRoom, " +
-                "mapReference='$mapReference')"
-    }
+    override fun toString(): String =
+        "AreaExitCell(position=$position, area=$area, directionToExitRoom=$directionToExitRoom, " +
+            "mapReference='$mapReference')"
 }
 
-
-class NorthSouthConnectorCell(
-        position: Position,
-) : Cell(position) {
+class NorthSouthConnectorCell(position: Position) : Cell(position) {
 
     override val style = "north-south-connector"
 
-    override fun edge(direction: Direction): Edge =
-            when (direction) {
-                Direction.NORTH, Direction.SOUTH -> Edge.OPEN
-                else -> Edge.NONE
-            }
-
-    override fun toString(): String {
-        return "NorthSouthConnectorCell(position=$position)"
+    override fun edge(direction: Direction): Edge = when (direction) {
+        Direction.NORTH, Direction.SOUTH -> Edge.OPEN
+        else -> Edge.NONE
     }
+
+    override fun toString(): String = "NorthSouthConnectorCell(position=$position)"
 }
 
-
-class EastWestConnectorCell(
-        position: Position,
-) : Cell(position) {
+class EastWestConnectorCell(position: Position) : Cell(position) {
 
     override val style = "east-west-connector"
 
-    override fun edge(direction: Direction): Edge =
-            when (direction) {
-                Direction.EAST, Direction.WEST -> Edge.OPEN
-                else -> Edge.NONE
-            }
-
-    override fun toString(): String {
-        return "EastWestConnectorCell(position=$position)"
+    override fun edge(direction: Direction): Edge = when (direction) {
+        Direction.EAST, Direction.WEST -> Edge.OPEN
+        else -> Edge.NONE
     }
+
+    override fun toString(): String = "EastWestConnectorCell(position=$position)"
 }

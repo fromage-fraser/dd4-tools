@@ -9,7 +9,8 @@ import java.nio.file.Path
 
 class AreaFileReader(areaFilePath: Path) : Closeable {
 
-    private val reader = PushbackReader(FileInputStream(areaFilePath.toFile()).reader(Charsets.UTF_8))
+    private val reader =
+        PushbackReader(FileInputStream(areaFilePath.toFile()).reader(Charsets.UTF_8))
 
     override fun close() {
         reader.close()
@@ -21,15 +22,18 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
         readWhitespace()
         val char = readChar() ?: throw ParseError("End of file")
 
-        if (char != Markup.SECTION_DELIMITER)
-            throw ParseError("Expected section delimiter '${Markup.SECTION_DELIMITER}' but found '$char'", this)
+        if (char != Markup.SECTION_DELIMITER) {
+            throw ParseError(
+                "Expected section delimiter '${Markup.SECTION_DELIMITER}' but found '$char'",
+                this,
+            )
+        }
 
         val tag = readBareWord()
 
         return try {
             Section.fromTag(tag)
-        }
-        catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             throw ParseError("Unrecognised section: $tag", this)
         }
     }
@@ -38,15 +42,18 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
         readWhitespace()
         val char = readChar() ?: throw ParseError("End of file")
 
-        if (char != Markup.VNUM_DELIMITER)
-            throw ParseError("Expected VNUM delimiter '${Markup.VNUM_DELIMITER}' but found '$char'", this)
+        if (char != Markup.VNUM_DELIMITER) {
+            throw ParseError(
+                "Expected VNUM delimiter '${Markup.VNUM_DELIMITER}' but found '$char'",
+                this,
+            )
+        }
 
         val tag = readBareWord()
 
         return try {
             tag.toInt()
-        }
-        catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             throw ParseError("Bad VNUM: $tag", this)
         }
     }
@@ -69,8 +76,7 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
 
         if (firstChar == '\'' || firstChar == '"') {
             quoteChar = firstChar
-        }
-        else {
+        } else {
             word += firstChar
         }
 
@@ -102,21 +108,21 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
         readWhitespace()
         val firstChar = readChar() ?: throw ParseError("End of file")
 
-        if (!(firstChar.isDigit() || firstChar == '+' || firstChar == '-'))
+        if (!(firstChar.isDigit() || firstChar == '+' || firstChar == '-')) {
             throw ParseError("Expected start of number, found '$firstChar'", this)
+        }
 
         val unparsed = firstChar + readWhile { it.isDigit() || it == Markup.BIT_DELIMITER }
 
         try {
             if (unparsed.contains(Markup.BIT_DELIMITER)) {
                 return unparsed.split(Markup.BIT_DELIMITER)
-                        .filter { it.isNotBlank() }
-                        .sumOf { it.toInt() }
+                    .filter { it.isNotBlank() }
+                    .sumOf { it.toInt() }
             }
 
             return unparsed.toInt()
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             throw ParseError("Unable to read number from value '$unparsed' (too large?)", this, e)
         }
     }
@@ -125,21 +131,21 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
         readWhitespace()
         val firstChar = readChar() ?: throw ParseError("End of file")
 
-        if (!firstChar.isDigit())
+        if (!firstChar.isDigit()) {
             throw ParseError("Expected start of number, found '$firstChar'", this)
+        }
 
         val unparsed = firstChar + readWhile { it.isDigit() || it == Markup.BIT_DELIMITER }
 
         try {
             if (unparsed.contains(Markup.BIT_DELIMITER)) {
                 return unparsed.split(Markup.BIT_DELIMITER)
-                        .filter { it.isNotBlank() }
-                        .sumOf { it.toULong() }
+                    .filter { it.isNotBlank() }
+                    .sumOf { it.toULong() }
             }
 
             return unparsed.toULong()
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             throw ParseError("Unable to read bits from value '$unparsed' (too large?)", this, e)
         }
     }
@@ -183,5 +189,5 @@ class AreaFileReader(areaFilePath: Path) : Closeable {
     }
 
     private fun snippet(text: String, length: Int = 50) =
-            if (text.length < length) text else text.substring(0, length) + "..."
+        if (text.length < length) text else text.substring(0, length) + "..."
 }

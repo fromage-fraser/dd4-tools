@@ -41,7 +41,7 @@ class Fragment {
         }
         cells.remove(cell.position)
         cell.fragment = null
-        //TODO: Recalculate min/max
+        // TODO: Recalculate min/max
     }
 
     fun columns() = maxX - minX + 1
@@ -59,8 +59,7 @@ class Fragment {
                 val position = Position(x, y)
                 if (cells.containsKey(position)) {
                     row.add(cells[position]!!)
-                }
-                else {
+                } else {
                     row.add(EmptyCell(position))
                 }
             }
@@ -72,7 +71,7 @@ class Fragment {
     }
 
     fun findCellForRoom(room: Room): RoomCell? =
-            cells.values.firstOrNull { it is RoomCell && it.room == room } as RoomCell?
+        cells.values.firstOrNull { it is RoomCell && it.room == room } as RoomCell?
 
     fun findCellNeighbour(cell: Cell, direction: Direction): Cell? {
         checkHasCell(cell)
@@ -82,7 +81,7 @@ class Fragment {
     fun hasRoom(room: Room): Boolean = findCellForRoom(room) != null
 
     @Suppress("unused")
-    fun labels(): Set<String> = cells.values.map { it.label }.filterNotNull().toSet()
+    fun labels(): Set<String> = cells.values.mapNotNull { it.label }.toSet()
 
     fun addConnectorCell(position: Position, direction: Direction) {
         val connectorCell = when (direction) {
@@ -106,7 +105,12 @@ class Fragment {
 
     fun moveCell(cell: Cell, newPosition: Position) {
         checkHasCell(cell)
-        if (cells.containsKey(newPosition)) throw IllegalArgumentException("New position not empty: $newPosition")
+        if (cells.containsKey(
+                newPosition,
+            )
+        ) {
+            throw IllegalArgumentException("New position not empty: $newPosition")
+        }
         removeCell(cell)
         cell.position = newPosition
         addCell(cell)
@@ -116,7 +120,6 @@ class Fragment {
         require(cells.values.contains(cell)) { "Cell not in fragment: $cell" }
     }
 
-    override fun toString(): String {
-        return "Fragment(minX=$minX, maxX=$maxX, minY=$minY, maxY=$maxY, cells=${cells.size})"
-    }
+    override fun toString(): String =
+        "Fragment(minX=$minX, maxX=$maxX, minY=$minY, maxY=$maxY, cells=${cells.size})"
 }

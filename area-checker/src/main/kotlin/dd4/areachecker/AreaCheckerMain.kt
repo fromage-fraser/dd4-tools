@@ -6,14 +6,13 @@ import kotlinx.cli.ArgType
 import kotlinx.cli.required
 
 fun main(args: Array<String>) {
-
     val argParser = ArgParser("area-analyser")
 
     val areaFileName = argParser.option(
-            ArgType.String,
-            fullName = "input-file",
-            shortName = "i",
-            description = "Input area file",
+        ArgType.String,
+        fullName = "input-file",
+        shortName = "i",
+        description = "Input area file",
     ).required()
 
     argParser.parse(args)

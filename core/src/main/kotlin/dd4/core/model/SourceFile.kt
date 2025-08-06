@@ -1,31 +1,30 @@
 package dd4.core.model
 
 data class SourceFile(
-        val id: String,
-        val fileName: String,
-        val filePath: String,
-        var area: Area? = null,
-        var areaSpecial: AreaSpecial? = null,
-        var recall: Recall? = null,
-        val mobiles: List<Mobile> = mutableListOf(),
-        val mobProgAssignments: List<MobProgAssignment> = mutableListOf(),
-        val mobProgFiles: List<MobProgFile> = mutableListOf(),
-        val objects: List<Item> = mutableListOf(),
-        val objectSets: List<ItemSet> = mutableListOf(),
-        val rooms: List<Room> = mutableListOf(),
-        val resets: List<Reset> = mutableListOf(),
-        val shops: List<Shop> = mutableListOf(),
-        val specialFunctions: List<SpecialFunction> = mutableListOf(),
-        val helps: List<Help> = mutableListOf(),
-        val games: List<Game> = mutableListOf(),
+    val id: String,
+    val fileName: String,
+    val filePath: String,
+    var area: Area? = null,
+    var areaSpecial: AreaSpecial? = null,
+    var recall: Recall? = null,
+    val mobiles: List<Mobile> = mutableListOf(),
+    val mobProgAssignments: List<MobProgAssignment> = mutableListOf(),
+    val mobProgFiles: List<MobProgFile> = mutableListOf(),
+    val objects: List<Item> = mutableListOf(),
+    val objectSets: List<ItemSet> = mutableListOf(),
+    val rooms: List<Room> = mutableListOf(),
+    val resets: List<Reset> = mutableListOf(),
+    val shops: List<Shop> = mutableListOf(),
+    val specialFunctions: List<SpecialFunction> = mutableListOf(),
+    val helps: List<Help> = mutableListOf(),
+    val games: List<Game> = mutableListOf(),
 ) {
-    override fun toString(): String {
-        return "SourceFile(id='$id', fileName='$fileName')"
-    }
+    override fun toString(): String = "SourceFile(id='$id', fileName='$fileName')"
 
     fun addMobiles(toAdd: Collection<Mobile>) = (mobiles as MutableList).addAll(toAdd)
 
-    fun addMobProgAssignments(toAdd: Collection<MobProgAssignment>) = (mobProgAssignments as MutableList).addAll(toAdd)
+    fun addMobProgAssignments(toAdd: Collection<MobProgAssignment>) =
+        (mobProgAssignments as MutableList).addAll(toAdd)
 
     fun addObjects(toAdd: Collection<Item>) = (objects as MutableList).addAll(toAdd)
 
@@ -37,7 +36,8 @@ data class SourceFile(
 
     fun addShops(toAdd: Collection<Shop>) = (shops as MutableList).addAll(toAdd)
 
-    fun addSpecialFunctions(toAdd: Collection<SpecialFunction>) = (specialFunctions as MutableList).addAll(toAdd)
+    fun addSpecialFunctions(toAdd: Collection<SpecialFunction>) =
+        (specialFunctions as MutableList).addAll(toAdd)
 
     fun addHelps(toAdd: Collection<Help>) = (helps as MutableList).addAll(toAdd)
 
@@ -90,9 +90,9 @@ data class SourceFile(
     }
 
     fun mobilesFor(room: Room): List<Mobile> =
-            resets.filter { it.type == Reset.Type.MOBILE_TO_ROOM }
-                    .filter { it.arg3 == room.vnum }
-                    .mapNotNull { findMobileByVnum(it.arg1) }
+        resets.filter { it.type == Reset.Type.MOBILE_TO_ROOM }
+            .filter { it.arg3 == room.vnum }
+            .mapNotNull { findMobileByVnum(it.arg1) }
 
     private fun checkRoomInArea(room: Room) {
         require(rooms.contains(room)) { "Room not found in area: $room" }

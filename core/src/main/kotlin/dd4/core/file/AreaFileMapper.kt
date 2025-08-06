@@ -11,9 +11,9 @@ import java.io.File
 class AreaFileMapper {
 
     private val yamlFactory = YAMLFactory()
-            .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
-            .enable(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE)
-            .enable(YAMLGenerator.Feature.SPLIT_LINES)
+        .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
+        .enable(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE)
+        .enable(YAMLGenerator.Feature.SPLIT_LINES)
 
     private val objectMapper = ObjectMapper(yamlFactory).registerModules(KotlinModule())
 
@@ -21,15 +21,16 @@ class AreaFileMapper {
         if (sourceFiles.isEmpty()) throw IllegalArgumentException("source files required")
 
         objectMapper.writer()
-                .withDefaultPrettyPrinter()
-                .writeValues(File(outputFilePath))
-                .use { sequenceWriter ->
-                    sequenceWriter.writeAll(sourceFiles)
-                }
+            .withDefaultPrettyPrinter()
+            .writeValues(File(outputFilePath))
+            .use { sequenceWriter ->
+                sequenceWriter.writeAll(sourceFiles)
+            }
     }
 
     fun readFromFile(inputFilePath: String): List<SourceFile> {
         val yamlParser = yamlFactory.createParser(File(inputFilePath))
-        return objectMapper.readValues(yamlParser, object : TypeReference<SourceFile>() {}).readAll()
+        return objectMapper.readValues(yamlParser, object : TypeReference<SourceFile>() {})
+            .readAll()
     }
 }

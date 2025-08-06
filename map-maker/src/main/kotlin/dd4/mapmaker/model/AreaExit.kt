@@ -6,8 +6,8 @@ import dd4.core.model.Room
 import dd4.core.model.SourceFile
 
 data class AreaExit(
-        val room: Room,
-        val exit: Exit,
-        val targetArea: Area,
-        val targetSourceFile: SourceFile,
+    val room: Room,
+    val exit: Exit,
+    val targetArea: Area,
+    val targetSourceFile: SourceFile,
 )

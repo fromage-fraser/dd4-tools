@@ -5,28 +5,25 @@ import dd4.core.util.Format
 
 // Avoid using the class name "Object"
 data class Item(
-        val vnum: Int,
-        val name: String,
-        val shortDescription: String,
-        val fullDescription: String,
-        val extraDescriptions: List<ExtraDescription>,
-        val type: Type,
-        val values: Values,
-        val weight: Int,
-        val cost: Int,
-        val level: Int,
-        val effects: List<Effect>,
-        val extraFlags: MutableSet<ExtraFlag>,
-        val wearFlags: Set<WearFlag>,
-        val trap: Trap?,
-        val ego: Ego?,
-        val typeProperties: TypeProperties,
-        val maxInstances: Int?,
+    val vnum: Int,
+    val name: String,
+    val shortDescription: String,
+    val fullDescription: String,
+    val extraDescriptions: List<ExtraDescription>,
+    val type: Type,
+    val values: Values,
+    val weight: Int,
+    val cost: Int,
+    val level: Int,
+    val effects: List<Effect>,
+    val extraFlags: MutableSet<ExtraFlag>,
+    val wearFlags: Set<WearFlag>,
+    val trap: Trap?,
+    val ego: Ego?,
+    val typeProperties: TypeProperties,
+    val maxInstances: Int?,
 ) {
-    enum class Type(
-            @JsonValue val tag: String,
-            val id: Int,
-    ) {
+    enum class Type(@JsonValue val tag: String, val id: Int) {
         LIGHT("light", 1),
         SCROLL("scroll", 2),
         WAND("wand", 3),
@@ -77,25 +74,21 @@ data class Item(
         PIPE("pipe", 52),
         PIPE_CLEANER("pipe_cleaner", 53),
         SMOKEABLE("smokeable", 54),
-        REMAINS("remains", 55);
+        REMAINS("remains", 55),
+        ;
 
         companion object {
-            fun fromId(value: Int) =
-                    try {
-                        values().first { it.id == value }
-                    }
-                    catch (e: NoSuchElementException) {
-                        throw IllegalArgumentException("Invalid object type ID: $value")
-                    }
+            fun fromId(value: Int) = try {
+                entries.first { it.id == value }
+            } catch (_: NoSuchElementException) {
+                throw IllegalArgumentException("Invalid object type ID: $value")
+            }
 
-            fun findById(value: Int) = values().find { it.id == value }
+            fun findById(value: Int) = entries.find { it.id == value }
         }
     }
 
-    enum class ExtraFlag(
-            @JsonValue val tag: String,
-            val bit: ULong,
-    ) {
+    enum class ExtraFlag(@JsonValue val tag: String, val bit: ULong) {
         GLOW("glow", 0x1u),
         HUM("hum", 0x2u),
         EGO("ego", 0x4u),
@@ -132,17 +125,15 @@ data class Item(
         RUNE("rune", 0x1000000000u),
         DONOT_RANDOMISE("donot_randomise", 0x2000000000u),
         WEAK_RANDOMISE("weak_randomise", 0x8000000000u),
-        CURSED("cursed", 0x2000000000000000u);
+        CURSED("cursed", 0x2000000000000000u),
+        ;
 
         companion object {
-            fun toSet(value: ULong) = values().filter { value.and(it.bit) != 0uL }.toMutableSet()
+            fun toSet(value: ULong) = entries.filter { value.and(it.bit) != 0uL }.toMutableSet()
         }
     }
 
-    enum class WearFlag(
-            @JsonValue val tag: String,
-            val bit: ULong,
-    ) {
+    enum class WearFlag(@JsonValue val tag: String, val bit: ULong) {
         TAKE("take", 0x1u),
         WEAR_FINGER("wear_finger", 0x2u),
         WEAR_NECK("wear_neck", 0x4u),
@@ -164,17 +155,15 @@ data class Item(
         SIZE_ALL("size_all", 0x8000000u),
         SIZE_SMALL("size_small", 0x10000000u),
         SIZE_MEDIUM("size_medium", 0x20000000u),
-        SIZE_LARGE("size_large", 0x40000000u);
+        SIZE_LARGE("size_large", 0x40000000u),
+        ;
 
         companion object {
-            fun toSet(value: ULong) = values().filter { value.and(it.bit) != 0uL }.toSet()
+            fun toSet(value: ULong) = entries.filter { value.and(it.bit) != 0uL }.toSet()
         }
     }
 
-    enum class EffectAttribute(
-            @JsonValue val tag: String,
-            val id: Int,
-    ) {
+    enum class EffectAttribute(@JsonValue val tag: String, val id: Int) {
         NONE("none", 0),
         STRENGTH("strength", 1),
         DEXTERITY("dexterity", 2),
@@ -226,23 +215,19 @@ data class Item(
         SERRATED("serrated", 48),
         INSCRIBED("inscribed", 49),
         CRIT("critical_hit", 50),
-        SWIFTNESS("swiftness", 51);
+        SWIFTNESS("swiftness", 51),
+        ;
 
         companion object {
-            fun fromId(value: Int) =
-                    try {
-                        values().first { it.id == value }
-                    }
-                    catch (e: NoSuchElementException) {
-                        throw IllegalArgumentException("Invalid effect attribute ID: $value")
-                    }
+            fun fromId(value: Int) = try {
+                entries.first { it.id == value }
+            } catch (_: NoSuchElementException) {
+                throw IllegalArgumentException("Invalid effect attribute ID: $value")
+            }
         }
     }
 
-    enum class WeaponAttackType(
-            @JsonValue val tag: String,
-            val id: Int,
-    ) {
+    enum class WeaponAttackType(@JsonValue val tag: String, val id: Int) {
         HIT("hit", 0),
         SLICE("slice", 1),
         STAB("stab", 2),
@@ -260,65 +245,50 @@ data class Item(
         RAKE("rake", 14),
         SWIPE("swipe", 15),
         STING("sting", 16),
-        SCOOP("scoop", 17);
+        SCOOP("scoop", 17),
+        ;
 
         companion object {
-            fun fromId(value: Int) =
-                    try {
-                        values().first { it.id == value }
-                    }
-                    catch (e: NoSuchElementException) {
-                        throw IllegalArgumentException("Invalid effect attribute ID: $value")
-                    }
+            fun fromId(value: Int) = try {
+                entries.first { it.id == value }
+            } catch (_: NoSuchElementException) {
+                throw IllegalArgumentException("Invalid effect attribute ID: $value")
+            }
         }
     }
 
-    data class ExtraDescription(
-            val keywords: String,
-            val description: String,
-    )
+    data class ExtraDescription(val keywords: String, val description: String)
 
-    data class Effect(
-            val attribute: EffectAttribute,
-            val modifier: Int,
-    ) {
+    data class Effect(val attribute: EffectAttribute, val modifier: Int) {
         override fun toString(): String = attribute.tag + ":" + Format.modifier(modifier)
     }
 
-    //TODO: Map effect
-    data class Trap(
-            val damage: Int,
-            val effect: Int,
-            val charge: Int,
-    )
+    // TODO: Map effect
+    data class Trap(val damage: Int, val effect: Int, val charge: Int)
 
-    //TODO: Map flags
-    data class Ego(
-            val flags: Int,
-    )
+    // TODO: Map flags
+    data class Ego(val flags: Int)
 
     data class Values(
-            val value0: String,
-            val value1: String,
-            val value2: String,
-            val value3: String,
+        val value0: String,
+        val value1: String,
+        val value2: String,
+        val value3: String,
     )
 
     data class TypeProperties(
-            var weaponAttackType: WeaponAttackType? = null,
-            var spellLevel: Int? = null,
-            var spells: List<String>? = null,
-            var currentCharges: Int? = null,
-            var maxCharges: Int? = null,
-            var containerCapacity: Int? = null,
+        var weaponAttackType: WeaponAttackType? = null,
+        var spellLevel: Int? = null,
+        var spells: List<String>? = null,
+        var currentCharges: Int? = null,
+        var maxCharges: Int? = null,
+        var containerCapacity: Int? = null,
     )
 
-    override fun toString(): String {
-        return "Object(#$vnum '$shortDescription'" +
-                " type=$type" +
-                " effect=" + effects.joinToString(",") { it.toString() }.ifEmpty { "none" } +
-                " extra=" + extraFlags.joinToString(",") { it.tag }.ifEmpty { "none" } +
-                " ${values.value0}/${values.value1}/${values.value2}/${values.value3}" +
-                ")"
-    }
+    override fun toString(): String = "Object(#$vnum '$shortDescription'" +
+        " type=$type" +
+        " effect=" + effects.joinToString(",") { it.toString() }.ifEmpty { "none" } +
+        " extra=" + extraFlags.joinToString(",") { it.tag }.ifEmpty { "none" } +
+        " ${values.value0}/${values.value1}/${values.value2}/${values.value3}" +
+        ")"
 }

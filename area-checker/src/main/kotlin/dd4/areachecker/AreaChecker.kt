@@ -3,10 +3,7 @@ package dd4.areachecker
 import dd4.core.file.AreaFileMapper
 import dd4.core.model.SourceFile
 
-class AreaChecker(
-        private val areaFileName: String,
-        private val areaFileMapper: AreaFileMapper,
-) {
+class AreaChecker(private val areaFileName: String, private val areaFileMapper: AreaFileMapper) {
     fun check() {
         val areaFiles = areaFileMapper.readFromFile(areaFileName)
 
@@ -26,33 +23,43 @@ class AreaChecker(
         for (item in sourceFile.objects) {
             if (item.fullDescription.contains(Regex("[\r\n\t]"))) {
                 error(
-                        "object #${item.vnum} \"${item.shortDescription}\": " +
-                                "full description has bad characters => \"${escape(item.fullDescription)}\"",
-                        sourceFile, result,
+                    "object #${item.vnum} \"${item.shortDescription}\": " +
+                        "full description has bad characters => \"${escape(
+                            item.fullDescription,
+                        )}\"",
+                    sourceFile,
+                    result,
                 )
             }
 
             if (item.shortDescription.matches(Regex("^.*[\\s.,;:!?]\\s*$"))) {
                 error(
-                        "object #${item.vnum}: " +
-                                "short description ends with bad characters => \"${escape(item.shortDescription)}\"",
-                        sourceFile, result,
+                    "object #${item.vnum}: " +
+                        "short description ends with bad characters => \"${escape(
+                            item.shortDescription,
+                        )}\"",
+                    sourceFile,
+                    result,
                 )
             }
 
             if (item.shortDescription.matches(Regex("^(A|An|The|Some)\\b.*$"))) {
                 warning(
-                        "object #${item.vnum}: " +
-                                "short description might be wrongly capitalised => \"${escape(item.shortDescription)}\"",
-                        sourceFile, result,
+                    "object #${item.vnum}: " +
+                        "short description might be wrongly capitalised => \"${escape(
+                            item.shortDescription,
+                        )}\"",
+                    sourceFile,
+                    result,
                 )
             }
 
             if (item.fullDescription.isBlank()) {
                 warning(
-                        "object #${item.vnum} \"${item.shortDescription}\": " +
-                                "blank full description (hidden)",
-                        sourceFile, result,
+                    "object #${item.vnum} \"${item.shortDescription}\": " +
+                        "blank full description (hidden)",
+                    sourceFile,
+                    result,
                 )
             }
         }
@@ -70,8 +77,7 @@ class AreaChecker(
         checkResult.warnings++
     }
 
-    private fun escape(string: String): String =
-            string.replace("\r", "\\r")
-                    .replace("\n", "\\n")
-                    .replace("\t", "\\t")
+    private fun escape(string: String): String = string.replace("\r", "\\r")
+        .replace("\n", "\\n")
+        .replace("\t", "\\t")
 }
