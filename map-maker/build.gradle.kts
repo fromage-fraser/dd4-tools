@@ -16,13 +16,9 @@ dependencies {
     implementation(Libs.freemarker)
 }
 
-val jar by tasks.getting(Jar::class) {
+tasks.shadowJar {
     archiveFileName.set("map-maker.jar")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes["Main-Class"] = "dd4.mapmaker.MapMakerMainKt"
-    }
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }) {
-        exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
     }
 }

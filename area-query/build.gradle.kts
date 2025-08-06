@@ -15,13 +15,9 @@ dependencies {
     implementation(Libs.jackson_module_kotlin)
 }
 
-val jar by tasks.getting(Jar::class) {
+tasks.shadowJar {
     archiveFileName.set("area-query.jar")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes["Main-Class"] = "dd4.areaquery.AreaQueryMainKt"
-    }
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }) {
-        exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
     }
 }
