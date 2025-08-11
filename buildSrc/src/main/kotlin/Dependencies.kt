@@ -1,6 +1,4 @@
 object Versions {
-    const val kotlin_jvm_target = "21"
-    const val kotlin_api = "2.1"
     const val jackson = "2.11.1"
     const val kotlinx_cli = "0.3.4"
     const val freemarker = "2.3.30"
