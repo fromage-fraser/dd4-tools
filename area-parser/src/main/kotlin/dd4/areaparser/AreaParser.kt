@@ -554,7 +554,11 @@ class AreaParser(
         return properties
     }
 
-    private fun validSpells(vararg spells: String) = spells.filter { it.isNotBlank() && it != "0" }
+    private fun validSpells(vararg spells: String) = spells.filter {
+        it.isNotBlank() &&
+            it != "0" &&
+            it != "-1"
+    }
 
     private fun parseRoomsSection(sourceFile: SourceFile, reader: AreaFileReader): List<Room> {
         val rooms = mutableListOf<Room>()
