@@ -16,8 +16,14 @@ allprojects {
 }
 
 subprojects {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = rootProject.libs.plugins.kotlin.jvm.get().pluginId)
+    apply(plugin = rootProject.libs.plugins.ktlint.get().pluginId)
+    apply(plugin = rootProject.libs.plugins.shadow.get().pluginId)
+
+    dependencies {
+        implementation(rootProject.libs.bundles.kotlin)
+        implementation(rootProject.libs.bundles.jackson)
+    }
 
     kotlin {
         jvmToolchain(21)
