@@ -8,8 +8,6 @@ application {
 
 dependencies {
     implementation(project(":core"))
-    implementation(libs.bundles.kotlin)
-    implementation(libs.bundles.jackson)
 }
 
 tasks.shadowJar {

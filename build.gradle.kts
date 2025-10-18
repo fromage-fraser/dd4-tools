@@ -20,6 +20,11 @@ subprojects {
     apply(plugin = rootProject.libs.plugins.ktlint.get().pluginId)
     apply(plugin = rootProject.libs.plugins.shadow.get().pluginId)
 
+    dependencies {
+        implementation(rootProject.libs.bundles.kotlin)
+        implementation(rootProject.libs.bundles.jackson)
+    }
+
     kotlin {
         jvmToolchain(21)
     }
