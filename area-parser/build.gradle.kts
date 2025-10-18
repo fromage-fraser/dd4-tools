@@ -1,4 +1,7 @@
 plugins {
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.shadow)
     application
 }
 
@@ -8,8 +11,7 @@ application {
 
 dependencies {
     implementation(project(":core"))
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(Libs.kotlinx_cli)
+    implementation(libs.bundles.kotlin)
 }
 
 tasks.shadowJar {

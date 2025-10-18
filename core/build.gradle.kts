@@ -1,6 +1,4 @@
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(Libs.jackson_databind)
-    implementation(Libs.jackson_dataformat_yaml)
-    implementation(Libs.jackson_module_kotlin)
+    implementation(libs.bundles.kotlin)
+    implementation(libs.bundles.jackson)
 }
