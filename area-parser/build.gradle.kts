@@ -2,17 +2,18 @@ plugins {
     application
 }
 
-application {
-    mainClass.set("dd4.areaparser.AreaParserMainKt")
-}
-
 dependencies {
     implementation(project(":core"))
 }
 
-tasks.shadowJar {
-    archiveFileName.set("area-parser.jar")
+application {
+    mainClass.set("dd4.areaparser.AreaParserMainKt")
+}
+
+tasks.named<Jar>("jar") {
     manifest {
-        attributes["Main-Class"] = "dd4.areaparser.AreaParserMainKt"
+        attributes(
+            "Main-Class" to application.mainClass.get(),
+        )
     }
 }
