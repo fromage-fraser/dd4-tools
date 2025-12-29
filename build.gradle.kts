@@ -3,7 +3,6 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktlint)
-    alias(libs.plugins.shadow)
 }
 
 allprojects {
@@ -18,7 +17,6 @@ allprojects {
 subprojects {
     apply(plugin = rootProject.libs.plugins.kotlin.jvm.get().pluginId)
     apply(plugin = rootProject.libs.plugins.ktlint.get().pluginId)
-    apply(plugin = rootProject.libs.plugins.shadow.get().pluginId)
 
     dependencies {
         implementation(rootProject.libs.bundles.kotlin)
@@ -39,6 +37,23 @@ subprojects {
             reporter(ReporterType.CHECKSTYLE)
             reporter(ReporterType.PLAIN)
             reporter(ReporterType.HTML)
+        }
+    }
+
+    plugins.withType<JavaPlugin> {
+        tasks.named<Jar>("jar") {
+            archiveFileName.set(project.name + ".jar")
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+            dependsOn(configurations.runtimeClasspath)
+
+            from(sourceSets.main.get().output)
+
+            from({
+                configurations.runtimeClasspath.get()
+                    .filter { it.name.endsWith(".jar") }
+                    .map { zipTree(it) }
+            })
         }
     }
 }

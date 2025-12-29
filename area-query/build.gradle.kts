@@ -2,17 +2,18 @@ plugins {
     application
 }
 
-application {
-    mainClass.set("dd4.areaquery.AreaQueryMainKt")
-}
-
 dependencies {
     implementation(project(":core"))
 }
 
-tasks.shadowJar {
-    archiveFileName.set("area-query.jar")
+application {
+    mainClass.set("dd4.areaquery.AreaQueryMainKt")
+}
+
+tasks.named<Jar>("jar") {
     manifest {
-        attributes["Main-Class"] = "dd4.areaquery.AreaQueryMainKt"
+        attributes(
+            "Main-Class" to application.mainClass.get(),
+        )
     }
 }
