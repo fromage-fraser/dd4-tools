@@ -6,6 +6,8 @@ data class AreaSpecial(
     val flags: Set<AreaFlag>,
     val experienceModifier: Int?,
     val resetMessage: String?,
+    val ambientSoundFile: String?,
+    val ambientSoundVolume: Int = 0,
 ) {
     enum class AreaFlag(@JsonValue val tag: String) {
         SCHOOL("school"),
@@ -14,6 +16,8 @@ data class AreaSpecial(
         SAFE("safe"),
         NO_TELEPORT("no_teleport"),
         NO_MAGIC("no_magic"),
+        AMBIENT_SOUND_FILE("ambient_sound_file"),
+        AMBIENT_SOUND_VOLUME("ambient_sound_volume"),
         ;
 
         companion object {

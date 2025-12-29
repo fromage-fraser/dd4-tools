@@ -25,6 +25,12 @@ enum class Direction(
             throw IllegalArgumentException("Invalid direction ID: $value")
         }
 
+        fun fromTag(value: String) = try {
+            entries.first { it.tag == value }
+        } catch (_: NoSuchElementException) {
+            throw IllegalArgumentException("Invalid direction tag: $value")
+        }
+
         val HORIZONTAL_DIRECTIONS = setOf(NORTH, EAST, SOUTH, WEST)
     }
 

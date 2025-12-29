@@ -10,12 +10,14 @@ enum class Section(@JsonValue val tag: String) {
     OBJECTS("OBJECTS"),
     OBJECT_SETS("OBJECT_SETS"),
     ROOMS("ROOMS"),
+    ROOM_AMBIENT_SOUNDS("ROOMS_AMBIENT"),
     RESETS("RESETS"),
     SHOPS("SHOPS"),
     SPECIAL_FUNCTIONS("SPECIALS"),
     HELPS("HELPS"),
     RECALL("RECALL"),
     GAMES("GAMES"),
+    EXIT_SOUNDS("EXITS_SFX"),
     END_OF_FILE("$"),
     ;
 
