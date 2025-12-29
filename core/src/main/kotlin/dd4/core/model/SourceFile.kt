@@ -13,11 +13,13 @@ data class SourceFile(
     val objects: List<Item> = mutableListOf(),
     val objectSets: List<ItemSet> = mutableListOf(),
     val rooms: List<Room> = mutableListOf(),
+    val roomAmbientSounds: List<RoomAmbientSound> = mutableListOf(),
     val resets: List<Reset> = mutableListOf(),
     val shops: List<Shop> = mutableListOf(),
     val specialFunctions: List<SpecialFunction> = mutableListOf(),
     val helps: List<Help> = mutableListOf(),
     val games: List<Game> = mutableListOf(),
+    val exitSounds: List<ExitSound> = mutableListOf(),
 ) {
     override fun toString(): String = "SourceFile(id='$id', fileName='$fileName')"
 
@@ -31,6 +33,9 @@ data class SourceFile(
     fun addObjectSets(toAdd: Collection<ItemSet>) = (objectSets as MutableList).addAll(toAdd)
 
     fun addRooms(toAdd: Collection<Room>) = (rooms as MutableList).addAll(toAdd)
+
+    fun addRoomAmbientSounds(toAdd: Collection<RoomAmbientSound>) =
+        (roomAmbientSounds as MutableList).addAll(toAdd)
 
     fun addResets(toAdd: Collection<Reset>) = (resets as MutableList).addAll(toAdd)
 
@@ -51,6 +56,8 @@ data class SourceFile(
             }
         }
     }
+
+    fun addExitSounds(toAdd: Collection<ExitSound>) = (exitSounds as MutableList).addAll(toAdd)
 
     fun findRoomByVnum(vnum: Int): Room? = rooms.firstOrNull { it.vnum == vnum }
 

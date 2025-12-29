@@ -5,6 +5,7 @@ import dd4.core.model.Area
 import dd4.core.model.AreaSpecial
 import dd4.core.model.Direction
 import dd4.core.model.Exit
+import dd4.core.model.ExitSound
 import dd4.core.model.Game
 import dd4.core.model.Help
 import dd4.core.model.Item
@@ -17,6 +18,7 @@ import dd4.core.model.Mobile
 import dd4.core.model.Recall
 import dd4.core.model.Reset
 import dd4.core.model.Room
+import dd4.core.model.RoomAmbientSound
 import dd4.core.model.Section
 import dd4.core.model.Shop
 import dd4.core.model.SourceFile
@@ -87,6 +89,7 @@ class AreaParser(
 
                 when (section) {
                     Section.END_OF_FILE -> loop = false
+
                     Section.AREA -> {
                         // We expect only one area per source file (note, some source files have no area).
                         // However, it is probably "fine" to have multiple areas and to just simply remember the
@@ -154,8 +157,15 @@ class AreaParser(
                     )
 
                     Section.ROOMS -> sourceFile.addRooms(parseRoomsSection(sourceFile, reader))
+
+                    Section.ROOM_AMBIENT_SOUNDS -> sourceFile.addRoomAmbientSounds(
+                        parseRoomAmbientSoundsSection(sourceFile, reader),
+                    )
+
                     Section.RESETS -> sourceFile.addResets(parseResetsSection(sourceFile, reader))
+
                     Section.SHOPS -> sourceFile.addShops(parseShopsSection(sourceFile, reader))
+
                     Section.SPECIAL_FUNCTIONS ->
                         sourceFile.addSpecialFunctions(
                             parseSpecialFunctionsSection(
@@ -165,7 +175,12 @@ class AreaParser(
                         )
 
                     Section.HELPS -> sourceFile.addHelps(parseHelpsSection(reader))
+
                     Section.GAMES -> sourceFile.addGames(parseGamesSection(sourceFile, reader))
+
+                    Section.EXIT_SOUNDS -> sourceFile.addExitSounds(
+                        parseExitSoundsSection(sourceFile, reader),
+                    )
                 }
             }
         }
@@ -187,16 +202,23 @@ class AreaParser(
         val flags = mutableSetOf<AreaSpecial.AreaFlag>()
         var experienceModifier: Int? = null
         var resetMessage: String? = null
+        var ambientFile: String? = null
+        var ambientVolume: Int = 0
         var loop = true
 
         while (loop) {
             when (val word = reader.readWord()) {
                 Markup.AREA_SPECIAL_END_OF_SECTION -> loop = false
+
                 Markup.AREA_SPECIAL_EXPERIENCE_MODIFIER_TAG ->
-                    experienceModifier =
-                        reader.readNumber()
+                    experienceModifier = reader.readNumber()
+
+                Markup.AREA_SPECIAL_AMBIENT_SOUND_FILE_TAG -> ambientFile = reader.readWord()
+
+                Markup.AREA_SPECIAL_AMBIENT_SOUND_VOLUME_TAG -> ambientVolume = reader.readNumber()
 
                 Markup.AREA_SPECIAL_RESET_MESSAGE_TAG -> resetMessage = reader.readString()
+
                 else -> flags.add(AreaSpecial.AreaFlag.fromTag(word))
             }
         }
@@ -205,6 +227,8 @@ class AreaParser(
             flags = flags,
             experienceModifier = experienceModifier,
             resetMessage = resetMessage,
+            ambientSoundFile = ambientFile,
+            ambientSoundVolume = ambientVolume,
         )
     }
 
@@ -272,6 +296,7 @@ class AreaParser(
                     }
 
                     Markup.MOBILE_MOB_PROG_END_DELIMITER -> reader.readToEol()
+
                     Markup.MOBILE_TAUGHT_SKILLS_DELIMITER -> {
                         reader.readChar()
                         taughtSkills.add(
@@ -291,7 +316,9 @@ class AreaParser(
                     }
 
                     Markup.SECTION_DELIMITER -> loop = false
+
                     null -> throw ParseError("End of file")
+
                     else -> throw ParseError("Unexpected char '$nextChar'", reader)
                 }
             }
@@ -340,8 +367,11 @@ class AreaParser(
                 }
 
                 Markup.MOB_PROG_END_OF_SECTION_DELIMITER -> loop = false
+
                 Markup.MOB_PROG_COMMENT_DELIMITER -> reader.readToEol()
+
                 null -> throw ParseError("End of file")
+
                 else -> throw ParseError("Unexpected char '$nextChar'", reader)
             }
         }
@@ -425,6 +455,7 @@ class AreaParser(
                     }
 
                     null -> throw ParseError("End of file")
+
                     else -> loop = false
                 }
             }
@@ -496,6 +527,7 @@ class AreaParser(
                     }
 
                     null -> throw ParseError("End of file")
+
                     else -> loop = false
                 }
             }
@@ -609,7 +641,9 @@ class AreaParser(
                     }
 
                     Markup.ROOM_END_OF_SECTION_DELIMITER -> loop = false
+
                     null -> throw ParseError("End of file")
+
                     else -> throw ParseError("Unexpected char '$nextChar'", reader)
                 }
             }
@@ -632,6 +666,32 @@ class AreaParser(
         return rooms
     }
 
+    private fun parseRoomAmbientSoundsSection(
+        sourceFile: SourceFile,
+        reader: AreaFileReader,
+    ): List<RoomAmbientSound> {
+        val roomAmbientSounds = mutableListOf<RoomAmbientSound>()
+
+        while (true) {
+            val tryVnum = reader.readWord()
+            if (tryVnum == Markup.ROOM_AMBIENT_SOUNDS_END_OF_SECTION_DELIMITER) break
+            val vnum = tryVnum.toInt()
+            val file = reader.readWord()
+            val volume = reader.readNumber()
+
+            val roomAmbientSound = RoomAmbientSound(
+                roomVnum = vnum,
+                file = file,
+                volume = volume,
+            )
+
+            debug("${sourceFile.id}: $roomAmbientSound")
+            roomAmbientSounds.add(roomAmbientSound)
+        }
+
+        return roomAmbientSounds
+    }
+
     private fun parseResetsSection(sourceFile: SourceFile, reader: AreaFileReader): List<Reset> {
         val resets = mutableListOf<Reset>()
         var loop = true
@@ -641,8 +701,11 @@ class AreaParser(
 
             when (val nextChar = reader.readChar()?.uppercaseChar()) {
                 Markup.RESET_END_OF_SECTION_DELIMITER -> loop = false
+
                 Markup.RESET_COMMENT_DELIMITER -> reader.readToEol()
+
                 null -> throw ParseError("End of file")
+
                 else -> {
                     val type = Reset.Type.fromId(nextChar)
                     val reset = Reset(
@@ -707,7 +770,9 @@ class AreaParser(
 
             when (val nextChar = reader.readChar()?.uppercaseChar()) {
                 Markup.SPECIAL_FUNCTION_END_OF_SECTION_DELIMITER -> loop = false
+
                 Markup.SPECIAL_FUNCTION_COMMENT_DELIMITER -> reader.readToEol()
+
                 Markup.SPECIAL_FUNCTION_MOBILE_DELIMITER -> {
                     val specialFunction = SpecialFunction(
                         mobileVnum = reader.readNumber(),
@@ -720,6 +785,7 @@ class AreaParser(
                 }
 
                 null -> throw ParseError("End of file")
+
                 else -> throw ParseError("Unexpected char '$nextChar'", reader)
             }
         }
@@ -756,7 +822,9 @@ class AreaParser(
 
             when (val nextChar = reader.readChar()?.uppercaseChar()) {
                 Markup.GAME_END_OF_SECTION_DELIMITER -> loop = false
+
                 Markup.GAME_COMMENT_DELIMITER -> reader.readToEol()
+
                 Markup.GAME_MOBILE_DELIMITER -> {
                     // TODO: Populate Game completely
                     val croupierVnum = reader.readNumber()
@@ -775,11 +843,42 @@ class AreaParser(
                 }
 
                 null -> throw ParseError("End of file")
+
                 else -> throw ParseError("Unexpected char '$nextChar'", reader)
             }
         }
 
         return games
+    }
+
+    private fun parseExitSoundsSection(
+        sourceFile: SourceFile,
+        reader: AreaFileReader,
+    ): List<ExitSound> {
+        val exitSounds = mutableListOf<ExitSound>()
+
+        while (true) {
+            val tryVnum = reader.readWord()
+            if (tryVnum == Markup.EXIT_SOUNDS_END_OF_SECTION_DELIMITER) break
+            val vnum = tryVnum.toInt()
+            val direction = Direction.fromTag(reader.readWord())
+            val action = reader.readWord()
+            val file = reader.readWord()
+            val volume = reader.readNumber()
+
+            val exitSound = ExitSound(
+                roomVnum = vnum,
+                direction = direction,
+                action = action,
+                file = file,
+                volume = volume,
+            )
+
+            debug("${sourceFile.id}: $exitSound")
+            exitSounds.add(exitSound)
+        }
+
+        return exitSounds
     }
 
     private fun loadMobProgFile(fileName: String): MobProgFile {
@@ -803,6 +902,7 @@ class AreaParser(
                     }
 
                     Markup.MOBILE_MOB_PROG_END_DELIMITER -> break
+
                     else -> throw ParseError(
                         "Unexpected character '$char' when reading mob prog file '$fileName",
                     )

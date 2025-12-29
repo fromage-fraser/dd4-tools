@@ -8,6 +8,8 @@ object Markup {
 
     const val AREA_SPECIAL_EXPERIENCE_MODIFIER_TAG = "exp_mod"
     const val AREA_SPECIAL_RESET_MESSAGE_TAG = "reset_msg"
+    const val AREA_SPECIAL_AMBIENT_SOUND_FILE_TAG = "ambient"
+    const val AREA_SPECIAL_AMBIENT_SOUND_VOLUME_TAG = "ambient_vol"
     const val AREA_SPECIAL_END_OF_SECTION = "$"
 
     const val MOBILE_MOB_PROG_START_DELIMITER = '>'
@@ -29,6 +31,8 @@ object Markup {
     const val ROOM_END_OF_SECTION_DELIMITER = 'S'
     const val ROOM_EXTRA_DESCRIPTION_DELIMITER = 'E'
 
+    const val ROOM_AMBIENT_SOUNDS_END_OF_SECTION_DELIMITER = "$"
+
     const val RESET_END_OF_SECTION_DELIMITER = 'S'
     const val RESET_COMMENT_DELIMITER = '*'
 
@@ -41,4 +45,6 @@ object Markup {
     const val GAME_END_OF_SECTION_DELIMITER = 'S'
     const val GAME_MOBILE_DELIMITER = 'M'
     const val GAME_COMMENT_DELIMITER = '*'
+
+    const val EXIT_SOUNDS_END_OF_SECTION_DELIMITER = "$"
 }
