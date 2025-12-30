@@ -35,6 +35,8 @@ class AreaParser(
 ) {
     private companion object {
         const val MOB_PROG_FILE_DIR = "MOBProgs"
+        val OBJECT_MATERIAL_ELEMENT_SEPARATOR_PATTERN =
+            Regex("""\s*${Markup.OBJECT_MATERIAL_ELEMENT_SEPARATOR}+\s*""")
     }
 
     fun parse(): List<SourceFile> {
@@ -203,7 +205,7 @@ class AreaParser(
         var experienceModifier: Int? = null
         var resetMessage: String? = null
         var ambientFile: String? = null
-        var ambientVolume: Int = 0
+        var ambientVolume = 0
         var loop = true
 
         while (loop) {
@@ -423,7 +425,7 @@ class AreaParser(
 
             val extraDescriptions = mutableListOf<Item.ExtraDescription>()
             val effects = mutableListOf<Item.Effect>()
-            var material: String? = null
+            val materials = mutableListOf<String>()
             var maxInstances: Int? = null
             var loop = true
 
@@ -452,8 +454,11 @@ class AreaParser(
 
                     Markup.OBJECT_MATERIAL_DELIMITER -> {
                         reader.readChar()
-                        // We just replace any previously registered material
-                        material = reader.readString()
+                        materials.addAll(
+                            reader.readString()
+                                .split(OBJECT_MATERIAL_ELEMENT_SEPARATOR_PATTERN)
+                                .filter { it.isNotBlank() },
+                        )
                     }
 
                     Markup.OBJECT_MAX_INSTANCES_DELIMITER -> {
@@ -488,7 +493,7 @@ class AreaParser(
                 ego = ego,
                 typeProperties = typeProperties,
                 maxInstances = maxInstances,
-                material = material,
+                materials = materials,
             )
 
             debug("${sourceFile.id}: $item")

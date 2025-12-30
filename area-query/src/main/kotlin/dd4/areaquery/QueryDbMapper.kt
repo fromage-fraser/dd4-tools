@@ -117,11 +117,12 @@ class QueryDbMapper {
                     mobProgs = mobProgRecords,
                     weaponAttackType = item.typeProperties.weaponAttackType?.tag,
                     spellLevel = item.typeProperties.spellLevel,
-                    spells = item.typeProperties.spells,
+                    spells = item.typeProperties.spells ?: listOf(),
                     currentCharges = item.typeProperties.currentCharges,
                     maxCharges = item.typeProperties.maxCharges,
                     containerCapacity = item.typeProperties.containerCapacity,
                     maxInstances = item.maxInstances,
+                    materials = item.materials,
                 )
             }
 

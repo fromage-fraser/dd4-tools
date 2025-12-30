@@ -31,14 +31,15 @@ data class ItemRecord(
     val flags: List<String>,
     val effects: List<EffectRecord>,
     val resets: List<ItemResetRecord>,
-    val mobProgs: List<ItemMobProgRecord>?,
+    val mobProgs: List<ItemMobProgRecord>,
     val weaponAttackType: String?,
     val spellLevel: Int?,
-    val spells: List<String>?,
+    val spells: List<String>,
     val currentCharges: Int?,
     val maxCharges: Int?,
     val containerCapacity: Int?,
     val maxInstances: Int?,
+    val materials: List<String>,
 )
 
 data class EffectRecord(val attr: String, val mod: Int)
