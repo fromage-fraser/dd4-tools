@@ -423,6 +423,7 @@ class AreaParser(
 
             val extraDescriptions = mutableListOf<Item.ExtraDescription>()
             val effects = mutableListOf<Item.Effect>()
+            var material: String? = null
             var maxInstances: Int? = null
             var loop = true
 
@@ -447,6 +448,12 @@ class AreaParser(
                                 modifier = reader.readNumber(),
                             ),
                         )
+                    }
+
+                    Markup.OBJECT_MATERIAL_DELIMITER -> {
+                        reader.readChar()
+                        // We just replace any previously registered material
+                        material = reader.readString()
                     }
 
                     Markup.OBJECT_MAX_INSTANCES_DELIMITER -> {
@@ -481,6 +488,7 @@ class AreaParser(
                 ego = ego,
                 typeProperties = typeProperties,
                 maxInstances = maxInstances,
+                material = material,
             )
 
             debug("${sourceFile.id}: $item")

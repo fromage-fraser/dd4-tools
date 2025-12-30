@@ -22,6 +22,7 @@ data class Item(
     val ego: Ego?,
     val typeProperties: TypeProperties,
     val maxInstances: Int?,
+    val material: String?,
 ) {
     enum class Type(@JsonValue val tag: String, val id: Int) {
         LIGHT("light", 1),
