@@ -36,7 +36,7 @@ class AreaParser(
     private companion object {
         const val MOB_PROG_FILE_DIR = "MOBProgs"
         val OBJECT_MATERIAL_ELEMENT_SEPARATOR_PATTERN =
-            Regex("""\s*${Markup.OBJECT_MATERIAL_ELEMENT_SEPARATOR}+\s*""")
+            Regex("""\s*${Regex.escape(Markup.OBJECT_MATERIAL_ELEMENT_SEPARATOR)}+\s*""")
     }
 
     fun parse(): List<SourceFile> {
