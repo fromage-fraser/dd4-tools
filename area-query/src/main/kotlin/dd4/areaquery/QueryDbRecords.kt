@@ -6,6 +6,7 @@ data class QueryDbRecord(
     val rooms: List<RoomRecord>,
     val mobiles: List<MobileRecord>,
     val items: List<ItemRecord>,
+    val itemMaterials: List<String>,
 )
 
 data class InfoRecord(val creationDate: String)
