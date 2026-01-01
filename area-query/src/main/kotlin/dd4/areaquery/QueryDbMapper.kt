@@ -126,12 +126,19 @@ class QueryDbMapper {
                 )
             }
 
+        val itemMaterials = queryDb.items()
+            .filter { it.item.materials.isNotEmpty() }
+            .flatMap { it.item.materials }
+            .toSet()
+            .sorted()
+
         return QueryDbRecord(
             info = infoRecord,
             areas = areaRecords,
             rooms = roomRecords,
             mobiles = mobileRecords,
             items = itemRecords,
+            itemMaterials = itemMaterials,
         )
     }
 
